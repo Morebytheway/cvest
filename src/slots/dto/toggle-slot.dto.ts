@@ -5,4 +5,3 @@ export class ToggleSlotDto {
   @IsBoolean()
   isActive: boolean;
 }
-

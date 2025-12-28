@@ -1,29 +1,33 @@
-import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { BookingsModule } from './bookings/bookings.module';
+import { ConfigModule } from '@nestjs/config';
 import { GlobalCacheModule } from './cache/cache.module';
-import { CacheService } from './cache/cache.service';
+import { ApiDocModule } from './swagger/swagger.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/seeds/database.module';
 import { MailModule } from './mail/mail.module';
 import { SlotModule } from './slots/slot.module';
+import { BookingsModule } from './bookings/bookings.module';
 import { TestModule } from './test/test.module';
-import { UsersModule } from './users/users.module';
 import { WalletModule } from './wallet/wallet.module';
+import { TradeWalletModule } from './trade-wallet/trade-wallet.module';
+import { InvestmentsModule } from './investments/investments.module';
+import { TransactionsModule } from './transactions/transactions.module';
+// import { SchedulesModule } from './schedules/schedules.module'; // Temporarily disabled due to crypto.randomUUID() compatibility issues
+import { AdminInvestmentsModule } from './admin/investments/admin-investments.module';
+import { AdminUserInvestmentsModule } from './admin/user-investments/admin-user-investments.module';
+import { AdminAnalyticsModule } from './admin/analytics/admin-analytics.module';
+import { AdminTransactionsModule } from './admin/transactions/admin-transactions.module';
+import { AdminWalletsModule } from './admin/wallets/admin-wallets.module';
+import { AdminAuditModule } from './admin/audit/admin-audit.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     MongooseModule.forRoot(process.env.MONGO_URI || ''),
 
-    // ✅ Use built-in in-memory cache
-    CacheModule.register({
-      isGlobal: true,
-      ttl: 300, // default TTL 5 mins
-      max: 1000, // max items in cache
-    }),
+    // ✅ Use built-in in-memory cache (configured in GlobalCacheModule)
     GlobalCacheModule,
     AuthModule,
     UsersModule,
@@ -33,8 +37,19 @@ import { WalletModule } from './wallet/wallet.module';
     BookingsModule,
     TestModule,
     WalletModule,
+    TradeWalletModule,
+    InvestmentsModule,
+    TransactionsModule,
+    // Admin Modules
+    AdminInvestmentsModule,
+    AdminUserInvestmentsModule,
+    AdminAnalyticsModule,
+    AdminTransactionsModule,
+    AdminWalletsModule,
+    AdminAuditModule,
+    ApiDocModule,
   ],
-  providers: [CacheService],
+  providers: [],
 })
 export class AppModule {
   constructor() {

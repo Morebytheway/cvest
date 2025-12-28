@@ -13,13 +13,17 @@
 // })
 // export class SlotModule {}
 
-
 // src/slots/slot.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SlotService } from './slot.service';
 import { SlotController } from './slot.controller';
-import { Slot, SlotSchema, SlotSettings, SlotSettingsSchema } from './schemas/slot.schema';
+import {
+  Slot,
+  SlotSchema,
+  SlotSettings,
+  SlotSettingsSchema,
+} from './schemas/slot.schema';
 import { CacheService } from '../cache/cache.service'; // if you directly provide it locally; prefer global cache module
 
 @Module({
@@ -34,4 +38,3 @@ import { CacheService } from '../cache/cache.service'; // if you directly provid
   exports: [SlotService],
 })
 export class SlotModule {}
-

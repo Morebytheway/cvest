@@ -17,7 +17,7 @@ export class TestController {
     return { value };
   }
 
-   @Get('cache-test')
+  @Get('cache-test')
   async testCache(@Query('key') key: string) {
     // store a value in cache
     await this.cacheService.set(key, { name: 'Owolabi', time: Date.now() });

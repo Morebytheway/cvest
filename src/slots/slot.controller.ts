@@ -130,7 +130,6 @@
 //   }
 // }
 
-
 import {
   Controller,
   Get,
@@ -304,7 +303,6 @@ export class SlotController {
     return this.slotService.updateAmount(scope, key ?? null, amount, req.user);
   }
 
-
   // @Patch('single')
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles(Role.ADMIN, Role.SUPER_ADMIN)
@@ -320,29 +318,31 @@ export class SlotController {
   //   return this.slotService.updateSingleSlot(date, time, { isActive, amount, status }, req.user);
   // }
 
-@Patch('update-single')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN, Role.SUPER_ADMIN)
-async updateSingleSlot(
-  @Query('date') date: string,
-  @Body() body: { 
-    time: string; 
-    isActive?: boolean; 
-    amount?: number; 
-    status?: 'available' | 'booked' | 'unavailable'; 
-  },
-  @Req() req: any, // your guard ensures user exists
-) {
-  const { time, isActive, amount, status } = body;
+  @Patch('update-single')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+  async updateSingleSlot(
+    @Query('date') date: string,
+    @Body()
+    body: {
+      time: string;
+      isActive?: boolean;
+      amount?: number;
+      status?: 'available' | 'booked' | 'unavailable';
+    },
+    @Req() req: any, // your guard ensures user exists
+  ) {
+    const { time, isActive, amount, status } = body;
 
-  if (!date || !time) {
-    throw new Error('Date and time are required.');
+    if (!date || !time) {
+      throw new Error('Date and time are required.');
+    }
+
+    return this.slotService.updateSingleSlot(
+      date,
+      time,
+      { isActive, amount, status },
+      req.user,
+    );
   }
-
-  return this.slotService.updateSingleSlot(date, time, { isActive, amount, status }, req.user);
 }
-
-
-  
-}
-

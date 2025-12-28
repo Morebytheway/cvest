@@ -1,12 +1,13 @@
 {
   "name": "cvest-api",
   "version": "0.0.1",
+  "type": "commonjs",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "npx nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node --max-old-space-size=512 dist/main.js",
     "start:dev": "nest start --watch",
@@ -40,17 +41,18 @@
     "class-validator": "^0.14.2",
     "mongoose": "^8.19.1",
     "node-modules": "^1.0.1",
+    "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "redis": "^5.9.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^13.0.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
+    "@nestjs/cli": "^11.0.14",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@types/bcrypt": "^6.0.0",
