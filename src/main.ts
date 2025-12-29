@@ -21,33 +21,27 @@ async function bootstrap() {
   app.use(express.static('.'));
 
   // === Enable CORS ===
-  // app.enableCors({
-  //   origin: (origin, callback) => {
-  //     const allowedOrigins = [
-  //       'https://soccerzone-frontend.vercel.app',
-  //       process.env.FRONTEND_URL,
-  //       'http://localhost:4000',
-  //       'http://localhost:9000',
-  //       'http://localhost:3000',
-  //       'http://localhost:5173',
-  //     ];
-
-  //     if (!origin || allowedOrigins.includes(origin)) {
-  //       callback(null, true);
-  //     } else {
-  //       console.warn(`❌ Blocked by CORS: ${origin}`);
-  //       callback(new Error('Not allowed by CORS'));
-  //     }
-  //   },
-  //   credentials: true,
-  //   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  //   allowedHeaders: ['Content-Type', 'Authorization'],
-  // });
-
   app.enableCors({
     origin: true,
     credentials: true,
   });
+
+    // === Preflight handler ===
+  app.options('*', (req, res) => {
+    const origin = req.headers.origin || '*';
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization',
+    );
+    res.sendStatus(204);
+  });
+  
   // === Swagger Documentation ===
   const config = new DocumentBuilder()
     .setTitle(process.env.APP_NAME || 'Investment Platform Admin API')
