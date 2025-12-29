@@ -20,27 +20,12 @@ async function bootstrap() {
   // === Serve static files (for swagger.json) ===
   app.use(express.static('.'));
 
-  // === Enable CORS ===
-  app.enableCors({
-    origin: true,
-    credentials: true,
-  });
-
-// Preflight handler (on Express instance)
-const expressApp = app.getHttpAdapter().getInstance();
-  expressApp.options('/*', (req, res) => {
-  const origin = req.headers.origin || '*';
-  res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization',
-  );
-  res.sendStatus(204);
+// === Enable CORS ===
+app.enableCors({
+  origin: true,          // allow all origins
+  methods: '*',          // allow all HTTP methods
+  allowedHeaders: '*',   // allow all headers
+  credentials: true,     // allow cookies/auth headers
 });
 
   
