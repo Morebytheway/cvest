@@ -26,21 +26,22 @@ async function bootstrap() {
     credentials: true,
   });
 
-    // === Preflight handler ===
-  app.options('*', (req, res) => {
-    const origin = req.headers.origin || '*';
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization',
-    );
-    res.sendStatus(204);
-  });
+// Preflight handler (on Express instance)
+const expressApp = app.getHttpAdapter().getInstance();
+expressApp.options('*', (req, res) => {
+  const origin = req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization',
+  );
+  res.sendStatus(204);
+});
   
   // === Swagger Documentation ===
   const config = new DocumentBuilder()
