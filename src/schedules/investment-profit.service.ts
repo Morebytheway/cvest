@@ -88,14 +88,14 @@ export class InvestmentProfitService {
 
     // Complete the investment
     await this.investmentsService.completeInvestment(
-      investment._id.toString(),
+      String(investment._id),
       session,
     );
 
     // Credit profit to trade wallet
     await this.investmentsService.creditProfit(
       userId,
-      investment._id.toString(),
+      String(investment._id),
       profitAmount,
       session,
     );

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export type AdminAuditDocument = AdminAudit & Document;
 
@@ -16,12 +16,16 @@ export class AdminAudit {
 
   @Prop()
   resourceId?: string; // ID of the resource that was acted upon
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  oldValues?: any;
 
-  @Prop()
-  oldValues?: any; // Previous values before update
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  newValues?: any;
+  // @Prop()
+  // oldValues?: any; // Previous values before update
 
-  @Prop()
-  newValues?: any; // New values after update
+  // @Prop()
+  // newValues?: any; // New values after update
 
   @Prop()
   ipAddress?: string;

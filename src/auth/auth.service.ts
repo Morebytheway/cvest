@@ -48,7 +48,7 @@ export class AuthService {
     });
 
     // 🔗 attach wallet to user
-    await this.usersService.updateUser(user._id.toString(), {
+    await this.usersService.updateUser(String(user._id), {
       wallet: wallet._id,
     });
 

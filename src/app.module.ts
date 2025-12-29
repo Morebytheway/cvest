@@ -55,6 +55,7 @@ export class AppModule {
   constructor() {
     console.log('✅ ENV Loaded:');
     console.log('✅ PORT:', process.env.PORT);
+    console.log('mongo', process.env.MONGO_URI);
     console.log('✅ APP_NAME:', process.env.APP_NAME);
   }
 }
