@@ -28,7 +28,7 @@ async function bootstrap() {
 
 // Preflight handler (on Express instance)
 const expressApp = app.getHttpAdapter().getInstance();
-expressApp.options('*', (req, res) => {
+  expressApp.options('/*', (req, res) => {
   const origin = req.headers.origin || '*';
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -42,6 +42,7 @@ expressApp.options('*', (req, res) => {
   );
   res.sendStatus(204);
 });
+
   
   // === Swagger Documentation ===
   const config = new DocumentBuilder()
