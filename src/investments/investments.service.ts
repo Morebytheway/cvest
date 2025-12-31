@@ -299,6 +299,45 @@ export class InvestmentsService {
     return transaction.save({ session });
   }
 
+  async returnPrincipal(
+    userId: string,
+    userInvestmentId: string,
+    principalAmount: number,
+    session?: ClientSession,
+  ) {
+    // Update wallet trade balance
+    const wallet = await this.walletModel
+      .findOne({ user: new Types.ObjectId(userId) })
+      .session(session || null);
+
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found');
+    }
+
+    if (wallet.frozen) {
+      throw new BadRequestException('Wallet is frozen');
+    }
+
+    wallet.tradeWalletBalance += principalAmount;
+    wallet.lastActivity = new Date();
+    await wallet.save({ session });
+
+    // Create principal transaction
+    const transaction = new this.transactionModel({
+      user: new Types.ObjectId(userId),
+      type: 'investment_principal',
+      amount: principalAmount,
+      source: 'investment',
+      destination: 'trade_wallet',
+      reference: `PRINCIPAL_${Date.now()}_${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+      status: 'completed',
+      description: `Principal returned from investment - ${principalAmount} USDT`,
+      relatedInvestment: new Types.ObjectId(userInvestmentId),
+    });
+
+    return transaction.save({ session });
+  }
+
   async getInvestmentSummary(userId: string): Promise<{
     totalInvested: number;
     activeInvestments: number;

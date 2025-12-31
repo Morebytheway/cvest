@@ -14,7 +14,6 @@ import {
   UserInvestment,
   UserInvestmentDocument,
 } from '../investments/schemas/user-investment.schema';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class WalletService {
@@ -281,7 +280,6 @@ export class WalletService {
       }
 
       // Create transaction record
-      const reference = `TW_${uuidv4().replace(/-/g, '').toUpperCase()}`;
       const transaction = await this.transactionsService.createTransaction(
         userId,
         'wallet_to_trade',
@@ -289,7 +287,7 @@ export class WalletService {
         'wallet',
         'trade_wallet',
         `Funding trade wallet with ${amount} USDT`,
-        reference,
+        undefined,
         sessionToUse,
       );
 

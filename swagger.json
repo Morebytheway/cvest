@@ -3378,6 +3378,49 @@
         ]
       }
     },
+    "/api/admin/schedules/process-matured-investments": {
+      "post": {
+        "operationId": "AdminSchedulesController_processMaturedInvestments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Matured investments processed successfully"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process all matured investments manually",
+        "tags": [
+          "Admin Schedules"
+        ]
+      }
+    },
+    "/api/admin/schedules/stats": {
+      "get": {
+        "operationId": "AdminSchedulesController_getInvestmentStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment maturity statistics",
+        "tags": [
+          "Admin Schedules"
+        ]
+      }
+    },
     "/api/swagger/json": {
       "get": {
         "operationId": "SwaggerController_getSwaggerJson",

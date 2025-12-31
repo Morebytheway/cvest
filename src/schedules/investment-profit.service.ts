@@ -41,7 +41,7 @@ export class InvestmentProfitService {
         .find({
           status: 'active',
           endDate: { $lte: new Date() },
-          isProfitCredited: false,
+          $or: [{ isProfitCredited: false }, { isPrincipalReturned: false }],
         })
         .populate('investment')
         .session(session);
@@ -82,6 +82,7 @@ export class InvestmentProfitService {
   ) {
     const userId = investment.user.toString();
     const profitAmount = investment.expectedProfit;
+    const principalAmount = investment.amount;
 
     // Complete the investment
     await this.investmentsService.completeInvestment(
@@ -89,13 +90,25 @@ export class InvestmentProfitService {
       session,
     );
 
-    // Credit profit to trade wallet
-    await this.investmentsService.creditProfit(
-      userId,
-      String(investment._id),
-      profitAmount,
-      session,
-    );
+    // Credit profit to trade wallet if not already credited
+    if (!investment.isProfitCredited) {
+      await this.investmentsService.creditProfit(
+        userId,
+        String(investment._id),
+        profitAmount,
+        session,
+      );
+    }
+
+    // Return principal to trade wallet if not already returned
+    if (!investment.isPrincipalReturned) {
+      await this.investmentsService.returnPrincipal(
+        userId,
+        String(investment._id),
+        principalAmount,
+        session,
+      );
+    }
 
     // Update wallet investment status
     const wallet = await this.walletModel
@@ -115,27 +128,6 @@ export class InvestmentProfitService {
       wallet.lastActivity = new Date();
       await wallet.save({ session });
     }
-
-    // Create a combined transaction record for the profit crediting
-    const transaction = new this.transactionModel({
-      user: new Types.ObjectId(userId),
-      type: 'investment_profit',
-      amount: profitAmount,
-      source: 'investment',
-      destination: 'trade_wallet',
-      reference: `PROFIT_${Date.now()}_${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
-      status: 'completed',
-      description: `Profit credited from investment - ${profitAmount} USDT`,
-      relatedInvestment: investment._id,
-      metadata: {
-        originalInvestment: investment._id,
-        investmentAmount: investment.amount,
-        profitRate: (investment.expectedProfit / investment.amount) * 100,
-        maturedAt: new Date(),
-      },
-    });
-
-    await transaction.save({ session });
   }
 
   // Manual endpoint for testing or emergency processing
@@ -156,7 +148,7 @@ export class InvestmentProfitService {
         .find({
           status: 'active',
           endDate: { $lte: new Date() },
-          isProfitCredited: false,
+          $or: [{ isProfitCredited: false }, { isPrincipalReturned: false }],
         })
         .populate('investment')
         .session(session);
@@ -191,46 +183,75 @@ export class InvestmentProfitService {
   async getInvestmentStats(): Promise<{
     totalActiveInvestments: number;
     maturedButNotCredited: number;
+    maturedButNotPrincipalReturned: number;
     dueInNext24Hours: number;
     totalProfitPending: number;
+    totalPrincipalPending: number;
   }> {
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    const [totalActive, maturedNotCredited, dueNext24Hours, profitStats] =
-      await Promise.all([
-        this.userInvestmentModel.countDocuments({ status: 'active' }),
-        this.userInvestmentModel.countDocuments({
-          status: 'active',
-          endDate: { $lte: now },
-          isProfitCredited: false,
-        }),
-        this.userInvestmentModel.countDocuments({
-          status: 'active',
-          endDate: { $lte: tomorrow },
-          isProfitCredited: false,
-        }),
-        this.userInvestmentModel.aggregate([
-          {
-            $match: {
-              status: 'active',
-              isProfitCredited: false,
-            },
+    const [
+      totalActive,
+      maturedNotCredited,
+      maturedNotPrincipalReturned,
+      dueNext24Hours,
+      profitStats,
+      principalStats,
+    ] = await Promise.all([
+      this.userInvestmentModel.countDocuments({ status: 'active' }),
+      this.userInvestmentModel.countDocuments({
+        status: 'active',
+        endDate: { $lte: now },
+        isProfitCredited: false,
+      }),
+      this.userInvestmentModel.countDocuments({
+        status: 'active',
+        endDate: { $lte: now },
+        isPrincipalReturned: false,
+      }),
+      this.userInvestmentModel.countDocuments({
+        status: 'active',
+        endDate: { $lte: tomorrow },
+        $or: [{ isProfitCredited: false }, { isPrincipalReturned: false }],
+      }),
+      this.userInvestmentModel.aggregate([
+        {
+          $match: {
+            status: 'active',
+            isProfitCredited: false,
           },
-          {
-            $group: {
-              _id: null,
-              totalProfitPending: { $sum: '$expectedProfit' },
-            },
+        },
+        {
+          $group: {
+            _id: null,
+            totalProfitPending: { $sum: '$expectedProfit' },
           },
-        ]),
-      ]);
+        },
+      ]),
+      this.userInvestmentModel.aggregate([
+        {
+          $match: {
+            status: 'active',
+            isPrincipalReturned: false,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalPrincipalPending: { $sum: '$amount' },
+          },
+        },
+      ]),
+    ]);
 
     return {
       totalActiveInvestments: totalActive,
       maturedButNotCredited: maturedNotCredited,
+      maturedButNotPrincipalReturned: maturedNotPrincipalReturned,
       dueInNext24Hours: dueNext24Hours,
       totalProfitPending: profitStats[0]?.totalProfitPending || 0,
+      totalPrincipalPending: principalStats[0]?.totalPrincipalPending || 0,
     };
   }
 }

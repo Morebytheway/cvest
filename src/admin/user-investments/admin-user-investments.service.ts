@@ -180,12 +180,22 @@ export class AdminUserInvestmentsService {
       investment.completedBy = new Types.ObjectId(adminId);
       investment.profitCreditedAt = new Date();
       investment.isProfitCredited = true;
+      investment.principalReturnedAt = new Date();
+      investment.isPrincipalReturned = true;
 
       // Credit profit to user's trade wallet
       await this.investmentsService.creditProfit(
         investment.user.toString(),
         id,
         investment.expectedProfit,
+        session,
+      );
+
+      // Return principal to user's trade wallet
+      await this.investmentsService.returnPrincipal(
+        investment.user.toString(),
+        id,
+        investment.amount,
         session,
       );
 

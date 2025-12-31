@@ -14,13 +14,14 @@ import { WalletModule } from './wallet/wallet.module';
 // Removed TradeWalletModule - trade wallet functionality merged into main wallet
 import { InvestmentsModule } from './investments/investments.module';
 import { TransactionsModule } from './transactions/transactions.module';
-// import { SchedulesModule } from './schedules/schedules.module'; // Temporarily disabled due to crypto.randomUUID() compatibility issues
+import { SchedulesModule } from './schedules/schedules.module';
 import { AdminInvestmentsModule } from './admin/investments/admin-investments.module';
 import { AdminUserInvestmentsModule } from './admin/user-investments/admin-user-investments.module';
 import { AdminAnalyticsModule } from './admin/analytics/admin-analytics.module';
 import { AdminTransactionsModule } from './admin/transactions/admin-transactions.module';
 import { AdminWalletsModule } from './admin/wallets/admin-wallets.module';
 import { AdminAuditModule } from './admin/audit/admin-audit.module';
+import { AdminSchedulesModule } from './admin/schedules/admin-schedules.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AdminAuditModule } from './admin/audit/admin-audit.module';
 
     InvestmentsModule,
     TransactionsModule,
+    SchedulesModule,
     // Admin Modules
     AdminInvestmentsModule,
     AdminUserInvestmentsModule,
@@ -47,6 +49,7 @@ import { AdminAuditModule } from './admin/audit/admin-audit.module';
     AdminTransactionsModule,
     AdminWalletsModule,
     AdminAuditModule,
+    AdminSchedulesModule,
     ApiDocModule,
   ],
   providers: [],

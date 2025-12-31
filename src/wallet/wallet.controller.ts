@@ -187,7 +187,7 @@ export class WalletController {
     description: 'Trade wallet balance retrieved successfully',
   })
   async getTradeBalance(@Request() req: AuthenticatedRequest) {
-    console.log(req.user)
+    console.log(req.user);
     // 695548b9980c17b0b5a4c635
     const balance = await this.walletService.getTradeBalance(req.user.userId);
 
