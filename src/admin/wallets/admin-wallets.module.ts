@@ -3,10 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AdminWalletsController } from './admin-wallets.controller';
 import { AdminWalletsService } from './admin-wallets.service';
 import { Wallet, WalletSchema } from '../../wallet/schema/wallet.schema';
-import {
-  TradingWallet,
-  TradingWalletSchema,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import { User, UserSchema } from '../../users/schemas/user.schema';
 import {
   Transaction,
@@ -17,7 +14,7 @@ import {
   imports: [
     MongooseModule.forFeature([
       { name: Wallet.name, schema: WalletSchema },
-      { name: TradingWallet.name, schema: TradingWalletSchema },
+
       { name: User.name, schema: UserSchema },
       { name: Transaction.name, schema: TransactionSchema },
     ]),

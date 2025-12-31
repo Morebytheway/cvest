@@ -17,10 +17,7 @@ import {
   Transaction,
   TransactionSchema,
 } from '../../transactions/schemas/transaction.schema';
-import {
-  TradingWallet,
-  TradingWalletSchema,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import { InvestmentsModule } from '../../investments/investments.module';
 
 @Module({
@@ -32,7 +29,6 @@ import { InvestmentsModule } from '../../investments/investments.module';
       { name: Investment.name, schema: InvestmentSchema },
       { name: User.name, schema: UserSchema },
       { name: Transaction.name, schema: TransactionSchema },
-      { name: TradingWallet.name, schema: TradingWalletSchema },
     ]),
   ],
   controllers: [AdminAnalyticsController],

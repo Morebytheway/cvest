@@ -72,8 +72,8 @@ export class InvestmentsController {
         userInvestment: result.userInvestment,
         transaction: result.transaction,
         tradeWallet: {
-          balance: result.tradeWallet.balance,
-          currency: result.tradeWallet.currency,
+          balance: result.wallet.tradeWalletBalance,
+          currency: result.wallet.currency,
         },
       },
     };

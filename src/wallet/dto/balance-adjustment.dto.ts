@@ -12,8 +12,8 @@ export class BalanceAdjustmentDto {
   @Min(0.01)
   amount: number;
 
-  @IsEnum(['NGN', 'USDT'])
-  currency: 'NGN' | 'USDT';
+  @IsEnum(['USDT'])
+  currency: 'USDT';
 
   @IsEnum(['credit', 'debit'])
   operation: 'credit' | 'debit';

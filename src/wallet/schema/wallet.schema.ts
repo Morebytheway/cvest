@@ -9,13 +9,7 @@ export class Wallet {
   user: Types.ObjectId;
 
   @Prop({ default: 0 })
-  balance: number;
-
-  @Prop({ default: 'NGN' })
-  currency: string;
-
-  @Prop({ default: 0 })
-  usdtBalance: number; // USDT balance for trading
+  balance: number; // USDT balance
 
   // Admin management fields
   @Prop({ default: false })
@@ -43,6 +37,19 @@ export class Wallet {
   suspiciousActivity: boolean;
   @Prop()
   adminNotes?: string;
+
+  // Trade wallet integration fields
+  @Prop({ default: 0 })
+  tradeWalletBalance: number; // USDT balance for trading
+
+  @Prop({ default: 'USDT' })
+  currency: string;
+
+  @Prop({ default: 'active', enum: ['active', 'frozen', 'closed'] })
+  status: string;
+
+  @Prop({ default: false })
+  hasActiveInvestments: boolean;
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet);

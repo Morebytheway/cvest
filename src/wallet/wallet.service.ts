@@ -10,15 +10,20 @@ import { Wallet, WalletDocument } from './schema/wallet.schema';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { TransactionsService } from '../transactions/transactions.service';
-import { CurrencyService } from '../common/services/currency.service';
+import {
+  UserInvestment,
+  UserInvestmentDocument,
+} from '../investments/schemas/user-investment.schema';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class WalletService {
   constructor(
     @InjectModel(Wallet.name)
     private walletModel: Model<WalletDocument>,
-    private transactionsService: TransactionsService,
-    private currencyService: CurrencyService,
+    public transactionsService: TransactionsService,
+    @InjectModel(UserInvestment.name)
+    private userInvestmentModel: Model<UserInvestmentDocument>,
   ) {}
 
   async create(
@@ -36,8 +41,6 @@ export class WalletService {
     const wallet = new this.walletModel({
       user: new Types.ObjectId(userId),
       balance: 0,
-      usdtBalance: 0,
-      currency: 'NGN',
       totalDeposited: 0,
       totalWithdrawn: 0,
       lastActivity: new Date(),
@@ -103,7 +106,6 @@ export class WalletService {
   async creditBalance(
     userId: string,
     amount: number,
-    currency: string = 'NGN',
     description?: string,
     session?: ClientSession,
   ): Promise<WalletDocument> {
@@ -117,13 +119,7 @@ export class WalletService {
       throw new BadRequestException('Wallet is frozen');
     }
 
-    let usdtAmount = amount;
-    if (currency !== 'USDT') {
-      usdtAmount = await this.currencyService.convertNgnToUsdt(amount);
-    }
-
     wallet.balance += amount;
-    wallet.usdtBalance += usdtAmount;
     wallet.totalDeposited += amount;
     wallet.lastActivity = new Date();
 
@@ -132,10 +128,10 @@ export class WalletService {
     await this.transactionsService.createTransaction(
       userId,
       'deposit',
-      usdtAmount,
+      amount,
       'wallet',
       'wallet',
-      description || `Wallet deposit: ${amount} ${currency}`,
+      description || `Wallet deposit: ${amount} USDT`,
       undefined,
       session,
     );
@@ -163,10 +159,7 @@ export class WalletService {
       throw new BadRequestException('Insufficient balance');
     }
 
-    const usdtAmount = await this.currencyService.convertNgnToUsdt(amount);
-
     wallet.balance -= amount;
-    wallet.usdtBalance -= usdtAmount;
     wallet.totalWithdrawn += amount;
     wallet.lastActivity = new Date();
 
@@ -175,84 +168,10 @@ export class WalletService {
     await this.transactionsService.createTransaction(
       userId,
       'withdrawal',
-      usdtAmount,
-      'wallet',
-      'wallet',
-      description || `Wallet withdrawal: ${amount} NGN`,
-      undefined,
-      session,
-    );
-
-    return wallet;
-  }
-
-  async creditUSDTBalance(
-    userId: string,
-    amount: number,
-    description?: string,
-    session?: ClientSession,
-  ): Promise<WalletDocument> {
-    if (amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
-    }
-
-    const wallet = await this.findByUser(userId);
-
-    if (wallet.frozen) {
-      throw new BadRequestException('Wallet is frozen');
-    }
-
-    wallet.usdtBalance += amount;
-    wallet.lastActivity = new Date();
-
-    await wallet.save({ session });
-
-    await this.transactionsService.createTransaction(
-      userId,
-      'deposit',
       amount,
       'wallet',
       'wallet',
-      description || `USDT wallet deposit: ${amount} USDT`,
-      undefined,
-      session,
-    );
-
-    return wallet;
-  }
-
-  async debitUSDTBalance(
-    userId: string,
-    amount: number,
-    description?: string,
-    session?: ClientSession,
-  ): Promise<WalletDocument> {
-    if (amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
-    }
-
-    const wallet = await this.findByUser(userId);
-
-    if (wallet.frozen) {
-      throw new BadRequestException('Wallet is frozen');
-    }
-
-    if (wallet.usdtBalance < amount) {
-      throw new BadRequestException('Insufficient USDT balance');
-    }
-
-    wallet.usdtBalance -= amount;
-    wallet.lastActivity = new Date();
-
-    await wallet.save({ session });
-
-    await this.transactionsService.createTransaction(
-      userId,
-      'withdrawal',
-      amount,
-      'wallet',
-      'wallet',
-      description || `USDT wallet withdrawal: ${amount} USDT`,
+      description || `Wallet withdrawal: ${amount} USDT`,
       undefined,
       session,
     );
@@ -296,15 +215,11 @@ export class WalletService {
     return wallet.save();
   }
 
-  async getBalance(
-    userId: string,
-  ): Promise<{ balance: number; usdtBalance: number; currency: string }> {
+  async getBalance(userId: string): Promise<{ balance: number }> {
     const wallet = await this.findByUser(userId);
 
     return {
       balance: wallet.balance,
-      usdtBalance: wallet.usdtBalance,
-      currency: wallet.currency,
     };
   }
 
@@ -313,5 +228,191 @@ export class WalletService {
       .findOne({ user: new Types.ObjectId(userId) })
       .exec();
     return !!wallet;
+  }
+
+  // Trade wallet integration methods
+
+  async fundTradeWallet(
+    userId: string,
+    amount: number,
+    session?: ClientSession,
+  ): Promise<{ transaction: any; wallet: WalletDocument }> {
+    if (amount <= 0) {
+      throw new BadRequestException('Amount must be positive');
+    }
+
+    const sessionToUse = session || (await this.walletModel.db.startSession());
+
+    if (!session) {
+      sessionToUse.startTransaction();
+    }
+
+    try {
+      // Get user's main wallet
+      const wallet = await this.walletModel
+        .findOne({ user: new Types.ObjectId(userId) })
+        .session(sessionToUse);
+
+      if (!wallet) {
+        throw new NotFoundException('Wallet not found');
+      }
+
+      if (wallet.frozen) {
+        throw new BadRequestException('Wallet is frozen');
+      }
+
+      // Check if user has sufficient balance
+      if (wallet.balance < amount) {
+        throw new BadRequestException('Insufficient balance in main wallet');
+      }
+
+      // Check if user has active investments (withdrawal restriction)
+      const activeInvestments = await this.userInvestmentModel
+        .countDocuments({
+          user: new Types.ObjectId(userId),
+          status: 'active',
+        })
+        .session(sessionToUse);
+
+      if (activeInvestments > 0) {
+        throw new BadRequestException(
+          'Cannot fund trade wallet while having active investments',
+        );
+      }
+
+      // Create transaction record
+      const reference = `TW_${uuidv4().replace(/-/g, '').toUpperCase()}`;
+      const transaction = await this.transactionsService.createTransaction(
+        userId,
+        'wallet_to_trade',
+        amount,
+        'wallet',
+        'trade_wallet',
+        `Funding trade wallet with ${amount} USDT`,
+        reference,
+        sessionToUse,
+      );
+
+      // Update balances
+      wallet.balance -= amount;
+      wallet.tradeWalletBalance += amount;
+      wallet.lastActivity = new Date();
+
+      await wallet.save({ session: sessionToUse });
+
+      if (!session) {
+        await sessionToUse.commitTransaction();
+      }
+
+      return { transaction, wallet };
+    } catch (error) {
+      if (!session) {
+        await sessionToUse.abortTransaction();
+        await sessionToUse.endSession();
+      }
+      throw error;
+    } finally {
+      if (!session) {
+        sessionToUse.endSession();
+      }
+    }
+  }
+
+  async getTradeBalance(userId: string): Promise<{
+    balance: number;
+    currency: string;
+    status: string;
+    hasActiveInvestments: boolean;
+  }> {
+    const wallet = await this.findByUser(userId);
+
+    // Check for active investments
+    const activeInvestments = await this.checkActiveInvestments(userId);
+
+    // Update hasActiveInvestments flag if needed
+    if (wallet.hasActiveInvestments !== activeInvestments) {
+      wallet.hasActiveInvestments = activeInvestments;
+      await wallet.save();
+    }
+
+    return {
+      balance: wallet.tradeWalletBalance,
+      currency: wallet.currency,
+      status: wallet.status,
+      hasActiveInvestments: wallet.hasActiveInvestments,
+    };
+  }
+
+  async updateTradeBalance(
+    userId: string,
+    amount: number,
+    session?: ClientSession,
+  ): Promise<WalletDocument> {
+    const wallet = await this.walletModel
+      .findOne({ user: new Types.ObjectId(userId) })
+      .session(session || null);
+
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found');
+    }
+
+    if (wallet.frozen) {
+      throw new BadRequestException('Wallet is frozen');
+    }
+
+    wallet.tradeWalletBalance += amount;
+
+    // Ensure balance doesn't go negative
+    if (wallet.tradeWalletBalance < 0) {
+      throw new BadRequestException('Insufficient balance in trade wallet');
+    }
+
+    wallet.lastActivity = new Date();
+
+    return wallet.save({ session });
+  }
+
+  async checkActiveInvestments(userId: string): Promise<boolean> {
+    const activeInvestments = await this.userInvestmentModel.countDocuments({
+      user: new Types.ObjectId(userId),
+      status: 'active',
+    });
+
+    return activeInvestments > 0;
+  }
+
+  async updateInvestmentStatus(
+    userId: string,
+    hasActiveInvestments: boolean,
+  ): Promise<void> {
+    await this.walletModel.updateOne(
+      { user: new Types.ObjectId(userId) },
+      { hasActiveInvestments },
+    );
+  }
+
+  async getBalances(userId: string): Promise<{
+    mainBalance: number;
+    tradeBalance: number;
+    currency: string;
+    status: string;
+    hasActiveInvestments: boolean;
+  }> {
+    const wallet = await this.findByUser(userId);
+    const activeInvestments = await this.checkActiveInvestments(userId);
+
+    // Update hasActiveInvestments flag if needed
+    if (wallet.hasActiveInvestments !== activeInvestments) {
+      wallet.hasActiveInvestments = activeInvestments;
+      await wallet.save();
+    }
+
+    return {
+      mainBalance: wallet.balance,
+      tradeBalance: wallet.tradeWalletBalance,
+      currency: wallet.currency,
+      status: wallet.status,
+      hasActiveInvestments: wallet.hasActiveInvestments,
+    };
   }
 }

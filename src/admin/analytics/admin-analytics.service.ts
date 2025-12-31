@@ -14,10 +14,7 @@ import {
   Transaction,
   TransactionDocument,
 } from '../../transactions/schemas/transaction.schema';
-import {
-  TradingWallet,
-  TradingWalletDocument,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import { DailyReportService } from './daily-report.service';
 import { DateRangeDto } from './dto/date-range.dto';
 
@@ -32,8 +29,7 @@ export class AdminAnalyticsService {
     private userModel: Model<UserDocument>,
     @InjectModel(Transaction.name)
     private transactionModel: Model<TransactionDocument>,
-    @InjectModel(TradingWallet.name)
-    private tradingWalletModel: Model<TradingWalletDocument>,
+    // Removed TradingWallet injection - now using enhanced Wallet schema
     private readonly dailyReportService: DailyReportService,
   ) {}
 

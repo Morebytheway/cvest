@@ -6,10 +6,7 @@ import {
   UserInvestment,
   UserInvestmentDocument,
 } from '../investments/schemas/user-investment.schema';
-import {
-  TradingWallet,
-  TradingWalletDocument,
-} from '../trade-wallet/schemas/trading-wallet.schema';
+import { Wallet, WalletDocument } from '../wallet/schema/wallet.schema';
 import {
   Transaction,
   TransactionDocument,
@@ -23,8 +20,8 @@ export class InvestmentProfitService {
   constructor(
     @InjectModel(UserInvestment.name)
     private userInvestmentModel: Model<UserInvestmentDocument>,
-    @InjectModel(TradingWallet.name)
-    private tradingWalletModel: Model<TradingWalletDocument>,
+    @InjectModel(Wallet.name)
+    private walletModel: Model<WalletDocument>,
     @InjectModel(Transaction.name)
     private transactionModel: Model<TransactionDocument>,
     private readonly investmentsService: InvestmentsService,
@@ -100,12 +97,12 @@ export class InvestmentProfitService {
       session,
     );
 
-    // Update trade wallet investment status
-    const tradeWallet = await this.tradingWalletModel
+    // Update wallet investment status
+    const wallet = await this.walletModel
       .findOne({ user: new Types.ObjectId(userId) })
       .session(session);
 
-    if (tradeWallet) {
+    if (wallet) {
       // Check if user has other active investments
       const activeInvestmentsCount = await this.userInvestmentModel
         .countDocuments({
@@ -114,8 +111,9 @@ export class InvestmentProfitService {
         })
         .session(session);
 
-      tradeWallet.hasActiveInvestments = activeInvestmentsCount > 0;
-      await tradeWallet.save({ session });
+      wallet.hasActiveInvestments = activeInvestmentsCount > 0;
+      wallet.lastActivity = new Date();
+      await wallet.save({ session });
     }
 
     // Create a combined transaction record for the profit crediting

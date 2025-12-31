@@ -10,10 +10,7 @@ import {
   UserInvestment,
   UserInvestmentDocument,
 } from './schemas/user-investment.schema';
-import {
-  TradingWallet,
-  TradingWalletDocument,
-} from '../trade-wallet/schemas/trading-wallet.schema';
+import { Wallet, WalletDocument } from '../wallet/schema/wallet.schema';
 import {
   Transaction,
   TransactionDocument,
@@ -27,8 +24,8 @@ export class InvestmentsService {
     private investmentModel: Model<InvestmentDocument>,
     @InjectModel(UserInvestment.name)
     private userInvestmentModel: Model<UserInvestmentDocument>,
-    @InjectModel(TradingWallet.name)
-    private tradingWalletModel: Model<TradingWalletDocument>,
+    @InjectModel(Wallet.name)
+    private walletModel: Model<WalletDocument>,
     @InjectModel(Transaction.name)
     private transactionModel: Model<TransactionDocument>,
   ) {}
@@ -76,17 +73,21 @@ export class InvestmentsService {
         );
       }
 
-      // Get user's trade wallet
-      const tradeWallet = await this.tradingWalletModel
-        .findOne({ user: userId })
+      // Get user's wallet
+      const wallet = await this.walletModel
+        .findOne({ user: new Types.ObjectId(userId) })
         .session(session);
 
-      if (!tradeWallet) {
-        throw new NotFoundException('Trade wallet not found');
+      if (!wallet) {
+        throw new NotFoundException('Wallet not found');
       }
 
-      // Check sufficient balance
-      if (tradeWallet.balance < investDto.amount) {
+      if (wallet.frozen) {
+        throw new BadRequestException('Wallet is frozen');
+      }
+
+      // Check sufficient trade balance
+      if (wallet.tradeWalletBalance < investDto.amount) {
         throw new BadRequestException('Insufficient balance in trade wallet');
       }
 
@@ -125,10 +126,11 @@ export class InvestmentsService {
 
       await transaction.save({ session });
 
-      // Update trade wallet balance
-      tradeWallet.balance -= investDto.amount;
-      tradeWallet.hasActiveInvestments = true;
-      await tradeWallet.save({ session });
+      // Update wallet trade balance
+      wallet.tradeWalletBalance -= investDto.amount;
+      wallet.hasActiveInvestments = true;
+      wallet.lastActivity = new Date();
+      await wallet.save({ session });
 
       // Mark transaction as completed
       transaction.status = 'completed';
@@ -139,7 +141,7 @@ export class InvestmentsService {
       return {
         userInvestment,
         transaction,
-        tradeWallet,
+        wallet,
       };
     } catch (error) {
       await session.abortTransaction();
@@ -264,17 +266,22 @@ export class InvestmentsService {
     profitAmount: number,
     session?: ClientSession,
   ) {
-    // Update trade wallet balance
-    const tradeWallet = await this.tradingWalletModel
-      .findOne({ user: userId })
+    // Update wallet trade balance
+    const wallet = await this.walletModel
+      .findOne({ user: new Types.ObjectId(userId) })
       .session(session || null);
 
-    if (!tradeWallet) {
-      throw new NotFoundException('Trade wallet not found');
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found');
     }
 
-    tradeWallet.balance += profitAmount;
-    await tradeWallet.save({ session });
+    if (wallet.frozen) {
+      throw new BadRequestException('Wallet is frozen');
+    }
+
+    wallet.tradeWalletBalance += profitAmount;
+    wallet.lastActivity = new Date();
+    await wallet.save({ session });
 
     // Create profit transaction
     const transaction = new this.transactionModel({

@@ -8,7 +8,10 @@ import {
   Transaction,
   TransactionSchema,
 } from '../transactions/schemas/transaction.schema';
-import { CurrencyService } from '../common/services/currency.service';
+import {
+  UserInvestment,
+  UserInvestmentSchema,
+} from '../investments/schemas/user-investment.schema';
 
 @Module({
   imports: [
@@ -16,9 +19,12 @@ import { CurrencyService } from '../common/services/currency.service';
     MongooseModule.forFeature([
       { name: Transaction.name, schema: TransactionSchema },
     ]),
+    MongooseModule.forFeature([
+      { name: UserInvestment.name, schema: UserInvestmentSchema },
+    ]),
   ],
   controllers: [WalletController],
-  providers: [WalletService, TransactionsService, CurrencyService],
+  providers: [WalletService, TransactionsService],
   exports: [WalletService],
 })
 export class WalletModule {}

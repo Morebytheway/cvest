@@ -1158,9 +1158,9 @@
         ]
       }
     },
-    "/api/trade-wallet/fund": {
+    "/api/wallet/fund-trade": {
       "post": {
-        "operationId": "TradeWalletController_fundTradeWallet",
+        "operationId": "WalletController_fundTradeWallet",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1180,187 +1180,57 @@
             "description": "Bad request"
           },
           "404": {
-            "description": "Main wallet not found"
+            "description": "Wallet not found"
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Fund trade wallet from main wallet",
         "tags": [
-          "Trade Wallet"
+          "Wallet"
         ]
       }
     },
-    "/api/trade-wallet/balance": {
+    "/api/wallet/trade-balance": {
       "get": {
-        "operationId": "TradeWalletController_getBalance",
+        "operationId": "WalletController_getTradeBalance",
         "parameters": [],
         "responses": {
           "200": {
             "description": "Trade wallet balance retrieved successfully"
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Get trade wallet balance",
         "tags": [
-          "Trade Wallet"
+          "Wallet"
         ]
       }
     },
-    "/api/trade-wallet/transactions": {
+    "/api/wallet/balances": {
       "get": {
-        "operationId": "TradeWalletController_getTradeWalletTransactions",
+        "operationId": "WalletController_getBalances",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Balances retrieved successfully"
+          }
+        },
+        "summary": "Get both main and trade wallet balances",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/trade-transactions": {
+      "get": {
+        "operationId": "WalletController_getTradeWalletTransactions",
         "parameters": [],
         "responses": {
           "200": {
             "description": "Transactions retrieved successfully"
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Get trade wallet transactions",
         "tags": [
-          "Trade Wallet"
-        ]
-      }
-    },
-    "/api/transactions": {
-      "get": {
-        "operationId": "TransactionsController_getTransactions",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Transactions retrieved successfully"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get user transactions",
-        "tags": [
-          "Transactions"
-        ]
-      }
-    },
-    "/api/transactions/summary": {
-      "get": {
-        "operationId": "TransactionsController_getTransactionSummary",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Transaction summary retrieved successfully"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get transaction summary",
-        "tags": [
-          "Transactions"
-        ]
-      }
-    },
-    "/api/transactions/{reference}": {
-      "get": {
-        "operationId": "TransactionsController_getTransactionByReference",
-        "parameters": [
-          {
-            "name": "reference",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transaction retrieved successfully"
-          },
-          "404": {
-            "description": "Transaction not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get transaction by reference",
-        "tags": [
-          "Transactions"
-        ]
-      }
-    },
-    "/api/transactions/type/{type}": {
-      "get": {
-        "operationId": "TransactionsController_getTransactionsByType",
-        "parameters": [
-          {
-            "name": "type",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transactions retrieved successfully"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get transactions by type",
-        "tags": [
-          "Transactions"
-        ]
-      }
-    },
-    "/api/transactions/status/{status}": {
-      "get": {
-        "operationId": "TransactionsController_getTransactionsByStatus",
-        "parameters": [
-          {
-            "name": "status",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transactions retrieved successfully"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get transactions by status",
-        "tags": [
-          "Transactions"
+          "Wallet"
         ]
       }
     },
@@ -1529,6 +1399,136 @@
         "summary": "Get investment by ID",
         "tags": [
           "Investments"
+        ]
+      }
+    },
+    "/api/transactions": {
+      "get": {
+        "operationId": "TransactionsController_getTransactions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user transactions",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/summary": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transaction summary retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transaction summary",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/{reference}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionByReference",
+        "parameters": [
+          {
+            "name": "reference",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction retrieved successfully"
+          },
+          "404": {
+            "description": "Transaction not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transaction by reference",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/type/{type}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transactions by type",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/status/{status}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionsByStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transactions by status",
+        "tags": [
+          "Transactions"
         ]
       }
     },

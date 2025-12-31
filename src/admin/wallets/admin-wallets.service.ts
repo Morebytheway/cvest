@@ -6,10 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Wallet, WalletDocument } from '../../wallet/schema/wallet.schema';
-import {
-  TradingWallet,
-  TradingWalletDocument,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import { User, UserDocument } from '../../users/schemas/user.schema';
 import {
   Transaction,
@@ -21,8 +18,6 @@ export class AdminWalletsService {
   constructor(
     @InjectModel(Wallet.name)
     private walletModel: Model<WalletDocument>,
-    @InjectModel(TradingWallet.name)
-    private tradingWalletModel: Model<TradingWalletDocument>,
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     @InjectModel(Transaction.name)
@@ -61,24 +56,21 @@ export class AdminWalletsService {
   }
 
   async getUserWallets(userId: string) {
-    const [wallet, tradingWallet] = await Promise.all([
-      this.walletModel
-        .findOne({ user: new Types.ObjectId(userId) })
-        .populate('frozenBy', 'name email')
-        .exec(),
-      this.tradingWalletModel
-        .findOne({ user: new Types.ObjectId(userId) })
-        .populate('frozenBy', 'name email')
-        .exec(),
-    ]);
+    const wallet = await this.walletModel
+      .findOne({ user: new Types.ObjectId(userId) })
+      .populate('frozenBy', 'name email')
+      .exec();
 
     if (!wallet) {
-      throw new NotFoundException('Main wallet not found');
+      throw new NotFoundException('Wallet not found');
     }
 
     return {
       wallet,
-      tradingWallet: tradingWallet || null,
+      tradeWalletBalance: wallet.tradeWalletBalance,
+      currency: wallet.currency,
+      status: wallet.status,
+      hasActiveInvestments: wallet.hasActiveInvestments,
     };
   }
 
@@ -270,74 +262,57 @@ export class AdminWalletsService {
   }
 
   async getWalletStats() {
-    const [walletStats, tradingWalletStats] = await Promise.all([
-      this.walletModel.aggregate([
-        {
-          $group: {
-            _id: null,
-            totalBalance: { $sum: '$balance' },
-            totalDeposited: { $sum: '$totalDeposited' },
-            totalWithdrawn: { $sum: '$totalWithdrawn' },
-            frozenCount: {
-              $sum: { $cond: [{ $eq: ['$frozen', true] }, 1, 0] },
-            },
-            suspiciousCount: {
-              $sum: { $cond: [{ $eq: ['$suspiciousActivity', true] }, 1, 0] },
-            },
-            averageBalance: { $avg: '$balance' },
+    const walletStats = await this.walletModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalMainBalance: { $sum: '$balance' },
+          totalTradeBalance: { $sum: '$tradeWalletBalance' },
+          totalDeposited: { $sum: '$totalDeposited' },
+          totalWithdrawn: { $sum: '$totalWithdrawn' },
+          frozenCount: {
+            $sum: { $cond: [{ $eq: ['$frozen', true] }, 1, 0] },
+          },
+          suspiciousCount: {
+            $sum: { $cond: [{ $eq: ['$suspiciousActivity', true] }, 1, 0] },
+          },
+          averageMainBalance: { $avg: '$balance' },
+          averageTradeBalance: { $avg: '$tradeWalletBalance' },
+          activeInvestmentsCount: {
+            $sum: { $cond: [{ $eq: ['$hasActiveInvestments', true] }, 1, 0] },
           },
         },
-      ]),
-      this.tradingWalletModel.aggregate([
-        {
-          $group: {
-            _id: null,
-            totalBalance: { $sum: '$balance' },
-            totalDeposited: { $sum: '$totalDeposited' },
-            totalWithdrawn: { $sum: '$totalWithdrawn' },
-            frozenCount: {
-              $sum: { $cond: [{ $eq: ['$frozen', true] }, 1, 0] },
-            },
-            suspiciousCount: {
-              $sum: { $cond: [{ $eq: ['$suspiciousActivity', true] }, 1, 0] },
-            },
-            averageBalance: { $avg: '$balance' },
-            activeInvestmentsCount: {
-              $sum: { $cond: [{ $eq: ['$hasActiveInvestments', true] }, 1, 0] },
-            },
-          },
-        },
-      ]),
+      },
     ]);
 
-    const mainWalletData = walletStats[0] || {
-      totalBalance: 0,
+    const walletData = walletStats[0] || {
+      totalMainBalance: 0,
+      totalTradeBalance: 0,
       totalDeposited: 0,
       totalWithdrawn: 0,
       frozenCount: 0,
       suspiciousCount: 0,
-      averageBalance: 0,
-    };
-
-    const tradingWalletData = tradingWalletStats[0] || {
-      totalBalance: 0,
-      totalDeposited: 0,
-      totalWithdrawn: 0,
-      frozenCount: 0,
-      suspiciousCount: 0,
-      averageBalance: 0,
+      averageMainBalance: 0,
+      averageTradeBalance: 0,
       activeInvestmentsCount: 0,
     };
 
     return {
-      mainWallets: mainWalletData,
-      tradingWallets: tradingWalletData,
+      mainWallets: walletData,
+      tradingWallets: {
+        totalBalance: walletData.totalTradeBalance,
+        totalDeposited: 0, // Not tracked separately for trade wallet anymore
+        totalWithdrawn: 0, // Not tracked separately for trade wallet anymore
+        frozenCount: walletData.frozenCount,
+        suspiciousCount: walletData.suspiciousCount,
+        averageBalance: walletData.averageTradeBalance,
+        activeInvestmentsCount: walletData.activeInvestmentsCount,
+      },
       combined: {
         totalBalance:
-          mainWalletData.totalBalance + tradingWalletData.totalBalance,
-        totalFrozen: mainWalletData.frozenCount + tradingWalletData.frozenCount,
-        totalSuspicious:
-          mainWalletData.suspiciousCount + tradingWalletData.suspiciousCount,
+          walletData.totalMainBalance + walletData.totalTradeBalance,
+        totalFrozen: walletData.frozenCount,
+        totalSuspicious: walletData.suspiciousCount,
       },
     };
   }

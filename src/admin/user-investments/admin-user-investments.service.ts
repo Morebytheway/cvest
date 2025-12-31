@@ -14,10 +14,7 @@ import {
   Investment,
   InvestmentDocument,
 } from '../../investments/schemas/investment.schema';
-import {
-  TradingWallet,
-  TradingWalletDocument,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import {
   Transaction,
   TransactionDocument,
@@ -34,8 +31,7 @@ export class AdminUserInvestmentsService {
     private userInvestmentModel: Model<UserInvestmentDocument>,
     @InjectModel(Investment.name)
     private investmentModel: Model<InvestmentDocument>,
-    @InjectModel(TradingWallet.name)
-    private tradingWalletModel: Model<TradingWalletDocument>,
+    // Removed TradingWallet injection - now using enhanced Wallet schema
     @InjectModel(Transaction.name)
     private transactionModel: Model<TransactionDocument>,
     private readonly investmentsService: InvestmentsService,

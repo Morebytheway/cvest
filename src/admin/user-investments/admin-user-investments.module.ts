@@ -10,10 +10,7 @@ import {
   Investment,
   InvestmentSchema,
 } from '../../investments/schemas/investment.schema';
-import {
-  TradingWallet,
-  TradingWalletSchema,
-} from '../../trade-wallet/schemas/trading-wallet.schema';
+// Removed TradingWallet import - now using enhanced Wallet schema
 import {
   Transaction,
   TransactionSchema,
@@ -26,7 +23,7 @@ import { InvestmentsModule } from '../../investments/investments.module';
     MongooseModule.forFeature([
       { name: UserInvestment.name, schema: UserInvestmentSchema },
       { name: Investment.name, schema: InvestmentSchema },
-      { name: TradingWallet.name, schema: TradingWalletSchema },
+
       { name: Transaction.name, schema: TransactionSchema },
       { name: User.name, schema: UserSchema },
     ]),

@@ -11,7 +11,7 @@ import { SlotModule } from './slots/slot.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { TestModule } from './test/test.module';
 import { WalletModule } from './wallet/wallet.module';
-import { TradeWalletModule } from './trade-wallet/trade-wallet.module';
+// Removed TradeWalletModule - trade wallet functionality merged into main wallet
 import { InvestmentsModule } from './investments/investments.module';
 import { TransactionsModule } from './transactions/transactions.module';
 // import { SchedulesModule } from './schedules/schedules.module'; // Temporarily disabled due to crypto.randomUUID() compatibility issues
@@ -37,7 +37,7 @@ import { AdminAuditModule } from './admin/audit/admin-audit.module';
     BookingsModule,
     TestModule,
     WalletModule,
-    TradeWalletModule,
+
     InvestmentsModule,
     TransactionsModule,
     // Admin Modules

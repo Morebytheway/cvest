@@ -8,13 +8,37 @@ import {
   Delete,
   UseGuards,
   Request,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { BalanceAdjustmentDto } from './dto/balance-adjustment.dto';
 import { FreezeWalletDto } from './dto/freeze-wallet.dto';
+import { IsNumber, IsPositive, Min } from 'class-validator';
+
+class FundTradeWalletDto {
+  @IsNumber()
+  @IsPositive()
+  @Min(1)
+  amount: number;
+}
+
+interface AuthenticatedRequest {
+  user: {
+    userId: string;
+    email: string;
+    role: string;
+  };
+}
 
 @Controller('wallet')
 @UseGuards(JwtAuthGuard)
@@ -79,30 +103,15 @@ export class WalletController {
     @Body() balanceDto: BalanceAdjustmentDto,
     @Request() req,
   ) {
-    if (balanceDto.currency === 'USDT') {
-      return this.walletService.creditUSDTBalance(
-        req.user.userId,
-        balanceDto.amount,
-        balanceDto.description,
-      );
-    }
     return this.walletService.creditBalance(
       req.user.userId,
       balanceDto.amount,
-      balanceDto.currency,
       balanceDto.description,
     );
   }
 
   @Post('debit')
   async debitBalance(@Body() balanceDto: BalanceAdjustmentDto, @Request() req) {
-    if (balanceDto.currency === 'USDT') {
-      return this.walletService.debitUSDTBalance(
-        req.user.userId,
-        balanceDto.amount,
-        balanceDto.description,
-      );
-    }
     return this.walletService.debitBalance(
       req.user.userId,
       balanceDto.amount,
@@ -136,5 +145,89 @@ export class WalletController {
       return this.walletService.remove(id);
     }
     throw new Error('Admin access required');
+  }
+
+  // Trade wallet endpoints
+
+  @Post('fund-trade')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Fund trade wallet from main wallet' })
+  @ApiResponse({ status: 200, description: 'Trade wallet funded successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 404, description: 'Wallet not found' })
+  async fundTradeWallet(
+    @Request() req: AuthenticatedRequest,
+    @Body() fundDto: FundTradeWalletDto,
+  ) {
+    const result = await this.walletService.fundTradeWallet(
+      req.user.userId,
+      fundDto.amount,
+    );
+
+    return {
+      success: true,
+      message: 'Trade wallet funded successfully',
+      data: {
+        transaction: result.transaction,
+        wallet: {
+          balance: result.wallet.balance,
+          tradeBalance: result.wallet.tradeWalletBalance,
+          currency: result.wallet.currency,
+          status: result.wallet.status,
+          hasActiveInvestments: result.wallet.hasActiveInvestments,
+        },
+      },
+    };
+  }
+
+  @Get('trade-balance')
+  @ApiOperation({ summary: 'Get trade wallet balance' })
+  @ApiResponse({
+    status: 200,
+    description: 'Trade wallet balance retrieved successfully',
+  })
+  async getTradeBalance(@Request() req: AuthenticatedRequest) {
+    console.log(req.user)
+    // 695548b9980c17b0b5a4c635
+    const balance = await this.walletService.getTradeBalance(req.user.userId);
+
+    return {
+      success: true,
+      data: balance,
+    };
+  }
+
+  @Get('balances')
+  @ApiOperation({ summary: 'Get both main and trade wallet balances' })
+  @ApiResponse({
+    status: 200,
+    description: 'Balances retrieved successfully',
+  })
+  async getBalances(@Request() req: AuthenticatedRequest) {
+    const balances = await this.walletService.getBalances(req.user.userId);
+
+    return {
+      success: true,
+      data: balances,
+    };
+  }
+
+  @Get('trade-transactions')
+  @ApiOperation({ summary: 'Get trade wallet transactions' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transactions retrieved successfully',
+  })
+  async getTradeWalletTransactions(@Request() req: AuthenticatedRequest) {
+    const transactions =
+      await this.walletService.transactionsService.getTransactionsByType(
+        req.user.userId,
+        'wallet_to_trade',
+      );
+
+    return {
+      success: true,
+      data: transactions,
+    };
   }
 }

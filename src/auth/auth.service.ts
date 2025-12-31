@@ -44,7 +44,6 @@ export class AuthService {
     const wallet = await this.walletModel.create({
       user: user._id,
       balance: 0,
-      currency: 'NGN',
     });
 
     // 🔗 attach wallet to user
@@ -72,7 +71,6 @@ export class AuthService {
       user,
       wallet: {
         balance: wallet.balance,
-        currency: wallet.currency,
       },
       token,
     };
@@ -186,7 +184,7 @@ export class AuthService {
 
     return {
       ...safeUser,
-      wallet: safeUser.wallet ?? { balance: 0, currency: 'NGN' },
+      wallet: safeUser.wallet ?? { balance: 0 },
     };
   }
 }
