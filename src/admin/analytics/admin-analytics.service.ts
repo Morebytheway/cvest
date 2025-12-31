@@ -591,7 +591,11 @@ export class AdminAnalyticsService {
     projectedInflows: number;
     projectedOutflows: number;
     netCashFlow: number;
-    dailyProjections: Array<{date: string, projectedInflow: number, projectedOutflow: number}>;
+    dailyProjections: Array<{
+      date: string;
+      projectedInflow: number;
+      projectedOutflow: number;
+    }>;
   }> {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + days);
@@ -633,7 +637,11 @@ export class AdminAnalyticsService {
     const outflows = projectedNewInvestments;
 
     // Create daily projections
-    const dailyProjections: Array<{date: string, projectedInflow: number, projectedOutflow: number}> = [];
+    const dailyProjections: Array<{
+      date: string;
+      projectedInflow: number;
+      projectedOutflow: number;
+    }> = [];
     for (let i = 1; i <= days; i++) {
       const projectionDate = new Date();
       projectionDate.setDate(projectionDate.getDate() + i);

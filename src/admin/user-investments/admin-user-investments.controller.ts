@@ -31,7 +31,7 @@ import { FreezeInvestmentDto } from './dto/freeze-investment.dto';
 
 interface AuthenticatedRequest {
   user: {
-    id: string;
+    userId: string;
     email: string;
     role: string;
   };
@@ -138,7 +138,7 @@ export class AdminUserInvestmentsController {
     const investment =
       await this.adminUserInvestmentsService.completeInvestmentManually(
         id,
-        req.user.id,
+        req.user.userId,
       );
 
     return {
@@ -165,7 +165,7 @@ export class AdminUserInvestmentsController {
     const investment = await this.adminUserInvestmentsService.freezeInvestment(
       id,
       freezeDto,
-      req.user.id,
+      req.user.userId,
     );
 
     return {
@@ -191,7 +191,7 @@ export class AdminUserInvestmentsController {
     const investment =
       await this.adminUserInvestmentsService.unfreezeInvestment(
         id,
-        req.user.id,
+        req.user.userId,
       );
 
     return {
@@ -218,7 +218,7 @@ export class AdminUserInvestmentsController {
     const investment =
       await this.adminUserInvestmentsService.terminateInvestment(
         id,
-        req.user.id,
+        req.user.userId,
         body.reason,
       );
 
@@ -247,7 +247,7 @@ export class AdminUserInvestmentsController {
       await this.adminUserInvestmentsService.adjustInvestmentProfit(
         id,
         adjustmentDto,
-        req.user.id,
+        req.user.userId,
       );
 
     return {
@@ -293,7 +293,7 @@ export class AdminUserInvestmentsController {
       await this.adminUserInvestmentsService.validateInvestmentAction(
         id,
         body.action,
-        req.user.id,
+        req.user.userId,
       );
 
     return {

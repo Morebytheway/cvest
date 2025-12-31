@@ -31,7 +31,7 @@ import { InvestmentPlanQueryDto } from './dto/investment-plan-query.dto';
 
 interface AuthenticatedRequest {
   user: {
-    id: string;
+    userId: string;
     email: string;
     role: string;
   };
@@ -63,7 +63,7 @@ export class AdminInvestmentsController {
     const investmentPlan =
       await this.adminInvestmentsService.createInvestmentPlan(
         createDto,
-        req.user.id,
+        req.user.userId,
       );
 
     return {
@@ -165,7 +165,7 @@ export class AdminInvestmentsController {
     const updatedPlan = await this.adminInvestmentsService.updateInvestmentPlan(
       id,
       updateDto,
-      req.user.id,
+      req.user.userId,
     );
 
     return {
@@ -189,7 +189,7 @@ export class AdminInvestmentsController {
   ) {
     const updatedPlan = await this.adminInvestmentsService.toggleInvestmentPlan(
       id,
-      req.user.id,
+      req.user.userId,
     );
 
     return {
@@ -217,7 +217,7 @@ export class AdminInvestmentsController {
   ) {
     const archivedPlan = await this.adminInvestmentsService.archiveOldPlan(
       id,
-      req.user.id,
+      req.user.userId,
     );
 
     return {

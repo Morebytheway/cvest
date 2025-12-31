@@ -27,7 +27,7 @@ import { TransactionReversalDto } from './dto/transaction-reversal.dto';
 import { ManualTransactionDto } from './dto/manual-transaction.dto';
 
 interface AuthenticatedRequest {
-  user: { id: string; email: string; role: string };
+  user: { userId: string; email: string; role: string };
 }
 
 @ApiTags('Admin Transactions')
@@ -104,7 +104,7 @@ export class AdminTransactionsController {
     const transaction = await this.adminTransactionsService.reverseTransaction(
       id,
       reversalDto.reversalReason,
-      req.user.id,
+      req.user.userId,
     );
     return {
       success: true,
@@ -126,7 +126,7 @@ export class AdminTransactionsController {
     const transaction =
       await this.adminTransactionsService.createManualTransaction(
         manualDto,
-        req.user.id,
+        req.user.userId,
       );
     return {
       success: true,
@@ -147,8 +147,9 @@ export class AdminTransactionsController {
     @Request() req: AuthenticatedRequest,
   ) {
     const transaction = await this.adminTransactionsService.reverseTransaction(
-      id, "Admin retry",
-      req.user.id,
+      id,
+      'Admin retry',
+      req.user.userId,
     );
     return {
       success: true,

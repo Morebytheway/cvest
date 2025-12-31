@@ -11,13 +11,13 @@ async function bootstrap() {
   // === Global API prefix ===
   app.setGlobalPrefix('api');
 
-    // === Enable CORS ===
-app.enableCors({
-  origin: true,          // allow all origins
-  methods: '*',          // allow all HTTP methods
-  allowedHeaders: '*',   // allow all headers
-  credentials: true,     // allow cookies/auth headers
-});
+  // === Enable CORS ===
+  app.enableCors({
+    origin: true, // allow all origins
+    methods: '*', // allow all HTTP methods
+    allowedHeaders: '*', // allow all headers
+    credentials: true, // allow cookies/auth headers
+  });
 
   // === Validation pipes ===
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
@@ -28,8 +28,6 @@ app.enableCors({
   // === Serve static files (for swagger.json) ===
   app.use(express.static('.'));
 
-
-  
   // === Swagger Documentation ===
   const config = new DocumentBuilder()
     .setTitle(process.env.APP_NAME || 'Investment Platform Admin API')

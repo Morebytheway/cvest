@@ -86,7 +86,7 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    await this.usersService.updateUser(user._id as unknown as string, {
+    await this.usersService.updateUser(user._id as string, {
       otpCode: otp,
       otpExpires: expiry,
     });

@@ -15,6 +15,7 @@ export class Transaction {
       'trade_to_investment',
       'investment_profit',
       'investment_principal',
+      'deposit',
       'withdrawal',
     ],
   })

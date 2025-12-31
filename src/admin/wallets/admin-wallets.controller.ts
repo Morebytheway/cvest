@@ -27,7 +27,7 @@ import { BalanceAdjustmentDto } from './dto/balance-adjustment.dto';
 import { WalletFreezeDto } from './dto/wallet-freeze.dto';
 
 interface AuthenticatedRequest {
-  user: { id: string; email: string; role: string };
+  user: { userId: string; email: string; role: string };
 }
 
 @ApiTags('Admin Wallets')
@@ -78,7 +78,7 @@ export class AdminWalletsController {
     const result = await this.adminWalletsService.adjustWalletBalance(
       userId,
       adjustmentDto,
-      req.user.id,
+      req.user.userId,
     );
     return {
       success: true,
@@ -99,7 +99,7 @@ export class AdminWalletsController {
     const result = await this.adminWalletsService.freezeWallet(
       userId,
       freezeDto,
-      req.user.id,
+      req.user.userId,
     );
     return {
       success: true,
@@ -118,7 +118,7 @@ export class AdminWalletsController {
   ) {
     const result = await this.adminWalletsService.unfreezeWallet(
       userId,
-      req.user.id,
+      req.user.userId,
     );
     return {
       success: true,
@@ -169,7 +169,7 @@ export class AdminWalletsController {
   ) {
     const result = await this.adminWalletsService.createManualAdjustment(
       adjustmentDto,
-      req.user.id,
+      req.user.userId,
     );
     return {
       success: true,

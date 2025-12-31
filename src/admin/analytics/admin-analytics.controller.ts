@@ -27,7 +27,7 @@ import { ReportGenerationDto } from './dto/report-generation.dto';
 
 interface AuthenticatedRequest {
   user: {
-    id: string;
+    userId: string;
     email: string;
     role: string;
   };

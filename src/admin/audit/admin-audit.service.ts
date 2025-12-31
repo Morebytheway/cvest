@@ -392,7 +392,7 @@ export class AdminAuditService {
       request.ip ||
       (Array.isArray(request.headers['x-forwarded-for'])
         ? request.headers['x-forwarded-for'][0]
-        : (request.headers['x-forwarded-for'] as string | undefined)) ||
+        : request.headers['x-forwarded-for']) ||
       (request.headers['x-real-ip'] as string | undefined) ||
       undefined
     );

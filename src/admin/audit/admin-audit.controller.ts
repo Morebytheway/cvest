@@ -21,7 +21,7 @@ import { Role } from '../../auth/roles.enum';
 import { AdminAuditService } from './admin-audit.service';
 
 interface AuthenticatedRequest {
-  user: { id: string; email: string; role: string };
+  user: { userId: string; email: string; role: string };
 }
 
 @ApiTags('Admin Audit')
@@ -34,7 +34,10 @@ export class AdminAuditController {
 
   @Get('logs')
   @ApiOperation({ summary: 'Get audit trail logs' })
-  @ApiResponse({ status: 200, description: 'Audit logs retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Audit logs retrieved successfully',
+  })
   @ApiQuery({ name: 'adminId', required: false })
   @ApiQuery({ name: 'action', required: false })
   @ApiQuery({ name: 'resource', required: false })
@@ -43,7 +46,10 @@ export class AdminAuditController {
   @ApiQuery({ name: 'dateTo', required: false })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  async getAuditTrail(@Query() query: any, @Request() req: AuthenticatedRequest) {
+  async getAuditTrail(
+    @Query() query: any,
+    @Request() req: AuthenticatedRequest,
+  ) {
     const result = await this.adminAuditService.getAuditTrail(query);
     return {
       success: true,
@@ -54,11 +60,17 @@ export class AdminAuditController {
 
   @Get('stats')
   @ApiOperation({ summary: 'Get admin audit summary' })
-  @ApiResponse({ status: 200, description: 'Audit statistics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Audit statistics retrieved successfully',
+  })
   @ApiQuery({ name: 'adminId', required: false })
   @ApiQuery({ name: 'days', required: false, type: Number })
   async getAuditStats(@Query() query: any) {
-    const stats = await this.adminAuditService.getAdminAuditSummary(query.adminId, query.days);
+    const stats = await this.adminAuditService.getAdminAuditSummary(
+      query.adminId,
+      query.days,
+    );
     return {
       success: true,
       message: 'Audit statistics retrieved successfully',
@@ -68,7 +80,10 @@ export class AdminAuditController {
 
   @Get('compliance-report')
   @ApiOperation({ summary: 'Generate compliance report' })
-  @ApiResponse({ status: 200, description: 'Compliance report generated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Compliance report generated successfully',
+  })
   @ApiQuery({ name: 'days', required: false, type: Number })
   async getComplianceReport(@Query('days') days?: number) {
     const report = await this.adminAuditService.generateComplianceReport(days);
@@ -94,7 +109,10 @@ export class AdminAuditController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get specific audit log entry' })
-  @ApiResponse({ status: 200, description: 'Audit entry retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Audit entry retrieved successfully',
+  })
   async getAuditEntry(@Param('id') id: string) {
     const audit = await this.adminAuditService.getAuditEntry(id);
     return {

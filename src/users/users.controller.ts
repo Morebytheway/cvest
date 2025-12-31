@@ -21,7 +21,7 @@ import { UsersService } from './users.service';
 
 // Extend Express Request to include `user`
 interface AuthenticatedRequest extends Request {
-  user?: { id: string; email: string; role: Role };
+  user?: { userId: string; email: string; role: Role };
 }
 
 @Controller('users')

@@ -35,7 +35,7 @@ export class TradeWalletService {
 
   async findByUser(userId: string) {
     let tradeWallet = await this.tradingWalletModel
-      .findOne({ user: userId })
+      .findOne({ user: new Types.ObjectId(userId) })
       .exec();
 
     if (!tradeWallet) {
@@ -64,7 +64,7 @@ export class TradeWalletService {
     try {
       // Get user's main wallet
       const mainWallet = await this.walletModel
-        .findOne({ user: userId })
+        .findOne({ user: new Types.ObjectId(userId) })
         .session(session);
       if (!mainWallet) {
         throw new NotFoundException('Main wallet not found');
@@ -91,13 +91,13 @@ export class TradeWalletService {
 
       // Get or create trade wallet
       let tradeWallet = await this.tradingWalletModel
-        .findOne({ user: userId })
+        .findOne({ user: new Types.ObjectId(userId) })
         .session(session);
       if (!tradeWallet) {
         tradeWallet = await this.createTradeWallet(userId);
         // Re-fetch with session
         tradeWallet = await this.tradingWalletModel
-          .findOne({ user: userId })
+          .findOne({ user: new Types.ObjectId(userId) })
           .session(session);
       }
 
@@ -178,7 +178,7 @@ export class TradeWalletService {
 
   async updateBalance(userId: string, amount: number, session?: ClientSession) {
     const tradeWallet = await this.tradingWalletModel
-      .findOne({ user: userId })
+      .findOne({ user: new Types.ObjectId(userId) })
       .session(session || null);
 
     if (!tradeWallet) {

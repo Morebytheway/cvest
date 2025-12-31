@@ -947,16 +947,6 @@
       "post": {
         "operationId": "WalletController_create",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateWalletDto"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": ""
@@ -968,6 +958,34 @@
       },
       "get": {
         "operationId": "WalletController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/my-wallet": {
+      "get": {
+        "operationId": "WalletController_getMyWallet",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/balance": {
+      "get": {
+        "operationId": "WalletController_getBalance",
         "parameters": [],
         "responses": {
           "200": {
@@ -1046,6 +1064,92 @@
         ],
         "responses": {
           "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/credit": {
+      "post": {
+        "operationId": "WalletController_creditBalance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/debit": {
+      "post": {
+        "operationId": "WalletController_debitBalance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/freeze": {
+      "post": {
+        "operationId": "WalletController_freezeWallet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreezeWalletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/unfreeze": {
+      "post": {
+        "operationId": "WalletController_unfreezeWallet",
+        "parameters": [],
+        "responses": {
+          "201": {
             "description": ""
           }
         },
@@ -3373,11 +3477,15 @@
         "type": "object",
         "properties": {}
       },
-      "CreateWalletDto": {
+      "UpdateWalletDto": {
         "type": "object",
         "properties": {}
       },
-      "UpdateWalletDto": {
+      "BalanceAdjustmentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "FreezeWalletDto": {
         "type": "object",
         "properties": {}
       },
@@ -3422,10 +3530,6 @@
         "properties": {}
       },
       "ManualTransactionDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "BalanceAdjustmentDto": {
         "type": "object",
         "properties": {}
       },

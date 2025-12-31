@@ -154,7 +154,7 @@ import { Role } from '../auth/roles.enum';
 
 interface AuthenticatedRequest extends Request {
   user?: {
-    id: string;
+    userId: string;
     email: string;
     role: Role;
   };

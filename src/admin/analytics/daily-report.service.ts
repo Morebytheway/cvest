@@ -254,7 +254,7 @@ export class DailyReportService {
   }
 
   async getDailyReport(date?: string): Promise<DailyReportDocument> {
-    let reportDate = date ? new Date(date) : new Date();
+    const reportDate = date ? new Date(date) : new Date();
     reportDate.setHours(0, 0, 0, 0);
 
     const report = await this.dailyReportModel.findOne({ date: reportDate });
