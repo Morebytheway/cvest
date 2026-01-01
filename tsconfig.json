@@ -16,7 +16,6 @@
     "incremental": true,
     "skipLibCheck": true,
     "strict": false,          // disables all strict type checking (optional)
-    "noEmitOnError": false,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
