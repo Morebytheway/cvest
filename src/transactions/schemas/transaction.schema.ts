@@ -12,6 +12,7 @@ export class Transaction {
     required: true,
     enum: [
       'wallet_to_trade',
+      'trade_to_wallet',
       'trade_to_investment',
       'investment_profit',
       'investment_principal',

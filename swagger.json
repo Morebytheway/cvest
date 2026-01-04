@@ -1219,6 +1219,37 @@
         ]
       }
     },
+    "/api/wallet/withdraw-trade": {
+      "post": {
+        "operationId": "WalletController_withdrawTradeWallet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawTradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trade wallet withdrawn successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        },
+        "summary": "Withdraw funds from trade wallet to main wallet",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
     "/api/wallet/trade-transactions": {
       "get": {
         "operationId": "WalletController_getTradeWalletTransactions",
@@ -3533,6 +3564,10 @@
         "properties": {}
       },
       "FundTradeWalletDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "WithdrawTradeDto": {
         "type": "object",
         "properties": {}
       },

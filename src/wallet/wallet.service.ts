@@ -389,6 +389,92 @@ export class WalletService {
     );
   }
 
+  async withdrawTradeWallet(
+    userId: string,
+    amount: number,
+    description?: string,
+    session?: ClientSession,
+  ): Promise<{ transaction: any; wallet: WalletDocument }> {
+    if (amount <= 0) {
+      throw new BadRequestException('Amount must be positive');
+    }
+
+    const sessionToUse = session || (await this.walletModel.db.startSession());
+
+    if (!session) {
+      sessionToUse.startTransaction();
+    }
+
+    try {
+      // Get user's main wallet
+      const wallet = await this.walletModel
+        .findOne({ user: new Types.ObjectId(userId) })
+        .session(sessionToUse);
+
+      if (!wallet) {
+        throw new NotFoundException('Wallet not found');
+      }
+
+      if (wallet.frozen) {
+        throw new BadRequestException('Wallet is frozen');
+      }
+
+      // Check if user has sufficient trade wallet balance
+      if (wallet.tradeWalletBalance < amount) {
+        throw new BadRequestException('Insufficient balance in trade wallet');
+      }
+
+      // Check if user has active investments (withdrawal restriction)
+      const activeInvestments = await this.userInvestmentModel
+        .countDocuments({
+          user: new Types.ObjectId(userId),
+          status: 'active',
+        })
+        .session(sessionToUse);
+
+      if (activeInvestments > 0) {
+        throw new BadRequestException(
+          'Cannot withdraw from trade wallet while having active investments',
+        );
+      }
+
+      // Create transaction record
+      const transaction = await this.transactionsService.createTransaction(
+        userId,
+        'trade_to_wallet',
+        amount,
+        'trade_wallet',
+        'wallet',
+        description || `Withdrawing ${amount} USDT from trade wallet`,
+        undefined,
+        sessionToUse,
+      );
+
+      // Update balances
+      wallet.tradeWalletBalance -= amount;
+      wallet.balance += amount;
+      wallet.lastActivity = new Date();
+
+      await wallet.save({ session: sessionToUse });
+
+      if (!session) {
+        await sessionToUse.commitTransaction();
+      }
+
+      return { transaction, wallet };
+    } catch (error) {
+      if (!session) {
+        await sessionToUse.abortTransaction();
+        await sessionToUse.endSession();
+      }
+      throw error;
+    } finally {
+      if (!session) {
+        sessionToUse.endSession();
+      }
+    }
+  }
+
   async getBalances(userId: string): Promise<{
     mainBalance: number;
     tradeBalance: number;

@@ -23,6 +23,7 @@ import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { BalanceAdjustmentDto } from './dto/balance-adjustment.dto';
 import { FreezeWalletDto } from './dto/freeze-wallet.dto';
+import { WithdrawTradeDto } from './dto/withdraw-trade.dto';
 import { IsNumber, IsPositive, Min } from 'class-validator';
 
 class FundTradeWalletDto {
@@ -209,6 +210,41 @@ export class WalletController {
     return {
       success: true,
       data: balances,
+    };
+  }
+
+  @Post('withdraw-trade')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Withdraw funds from trade wallet to main wallet' })
+  @ApiResponse({
+    status: 200,
+    description: 'Trade wallet withdrawn successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 404, description: 'Wallet not found' })
+  async withdrawTradeWallet(
+    @Request() req: AuthenticatedRequest,
+    @Body() withdrawDto: WithdrawTradeDto,
+  ) {
+    const result = await this.walletService.withdrawTradeWallet(
+      req.user.userId,
+      withdrawDto.amount,
+      withdrawDto.description,
+    );
+
+    return {
+      success: true,
+      message: 'Trade wallet withdrawn successfully',
+      data: {
+        transaction: result.transaction,
+        wallet: {
+          balance: result.wallet.balance,
+          tradeBalance: result.wallet.tradeWalletBalance,
+          currency: result.wallet.currency,
+          status: result.wallet.status,
+          hasActiveInvestments: result.wallet.hasActiveInvestments,
+        },
+      },
     };
   }
 
