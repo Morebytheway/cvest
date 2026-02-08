@@ -19,7 +19,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { BookingsService } from './bookings.service';
 
 interface AuthenticatedRequest extends Request {
-  user?: { id: string; email: string; role: Role };
+  user?: { userId: string; email: string; role: Role };
 }
 
 @Controller('bookings')
@@ -40,7 +40,7 @@ export class BookingsController {
     if (!req.user) throw new ForbiddenException('Unauthorized');
 
     const booking = await this.bookingsService.bookByDateTime(
-      req.user.id,
+      req.user.userId,
       date,
       startTimes,
       req.user.email,
@@ -102,7 +102,7 @@ export class BookingsController {
   @Get()
   async getUserBookings(@Req() req: AuthenticatedRequest) {
     if (!req.user) throw new ForbiddenException('Unauthorized');
-    return this.bookingsService.getUserBookings(req.user.id);
+    return this.bookingsService.getUserBookings(req.user.userId);
   }
 
   /** 6. Admin: get specific user's bookings */
@@ -149,7 +149,7 @@ export class BookingsController {
     @Param('bookingId') bookingId: string,
     @Req() req: any,
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const isAdmin = [Role.ADMIN, Role.SUPER_ADMIN].includes(req.user.role);
     return this.bookingsService.cancelBooking(bookingId, userId, isAdmin);
   }
@@ -161,7 +161,7 @@ export class BookingsController {
     @Req() req: any,
     @Body('bookingIds') bookingIds: string[],
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const isAdmin = [Role.ADMIN, Role.SUPER_ADMIN].includes(req.user.role);
     return this.bookingsService.cancelOrDeleteBookings(
       bookingIds,
@@ -229,7 +229,7 @@ export class BookingsController {
     if (!req.user) throw new ForbiddenException('Unauthorized');
 
     const booking = await this.bookingsService.adminBookByDateTime(
-      req.user.id, // admin user id
+      req.user.userId, // admin user id
       date,
       startTimes,
       userEmail,

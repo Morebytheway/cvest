@@ -65,7 +65,10 @@ export class PaymentsController {
     @Headers('x-paystack-signature') signature: string,
   ) {
     try {
-      const verified = this.paymentsService.verifyPaystackSignature(req.body, signature);
+      const verified = this.paymentsService.verifyPaystackSignature(
+        req.body,
+        signature,
+      );
       if (!verified) {
         return res.status(400).send('Invalid signature');
       }
@@ -84,38 +87,36 @@ export class PaymentsController {
     }
   }
 
-
   // GET /payments/booking/details?reference=xyz
-@Get('booking/details')
-async getBookingDetails(@Query('reference') reference: string): Promise<any> {
-  if (!reference) {
+  @Get('booking/details')
+  async getBookingDetails(@Query('reference') reference: string): Promise<any> {
+    if (!reference) {
+      return {
+        success: false,
+        statusCode: 400,
+        message: 'Missing reference',
+      };
+    }
+
+    const booking = await this.paymentsService.getBookingByReference(reference);
+
+    if (!booking) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: 'No booking found for this payment reference',
+      };
+    }
+
     return {
-      success: false,
-      statusCode: 400,
-      message: 'Missing reference',
+      success: true,
+      statusCode: 200,
+      message: 'Booking details retrieved successfully',
+      data: {
+        bookingId: booking.bookingId,
+        ticketId: booking.ticketId,
+        slots: booking.slots,
+      },
     };
   }
-
-  const booking = await this.paymentsService.getBookingByReference(reference);
-
-  if (!booking) {
-    return {
-      success: false,
-      statusCode: 404,
-      message: 'No booking found for this payment reference',
-    };
-  }
-
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Booking details retrieved successfully',
-    data: {
-      bookingId: booking.bookingId,
-      ticketId: booking.ticketId,
-      slots: booking.slots,
-    },
-  };
-}
-
 }

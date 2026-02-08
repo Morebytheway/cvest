@@ -8,9 +8,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { SignupDto } from '../auth/dto/signup.dto';
+import { Role } from '../auth/roles.enum';
 import { Booking, BookingDocument } from '../bookings/schemas/booking.schema';
+import { AdminCreateUserDto } from './dto/admin-create-user.dto';
 import { EditProfileDto } from './dto/edit-profile.dto';
 import { User, UserDocument } from './schemas/user.schema';
+
+type CreateUserInput = SignupDto | AdminCreateUserDto;
 
 @Injectable()
 export class UsersService {
@@ -20,21 +24,34 @@ export class UsersService {
   ) {}
 
   // Create user (signup)
-  async createUser(dto: SignupDto): Promise<UserDocument> {
-    // Check for existing user
+  async createUser(dto: CreateUserInput): Promise<UserDocument> {
+    // 🔍 Check for existing user
     const existing = await this.userModel.findOne({
-      $or: [{ email: dto.email }, { phone: dto.phone }],
+      $or: [
+        { email: dto.email },
+        ...('phone' in dto && dto.phone ? [{ phone: dto.phone }] : []),
+      ],
     });
-    if (existing) throw new BadRequestException('User already exists');
 
-    // ✅ Hash the password before saving
+    if (existing) {
+      throw new BadRequestException('User already exists');
+    }
+
+    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user = new this.userModel({
-      ...dto,
+    // 🧠 Build user payload safely
+    const userPayload: any = {
+      email: dto.email,
       password: hashedPassword,
-    });
+      role: 'role' in dto ? dto.role : Role.USER,
+    };
 
+    // Optional fields (only if present)
+    if ('name' in dto) userPayload.name = dto.name;
+    if ('phone' in dto) userPayload.phone = dto.phone;
+
+    const user = new this.userModel(userPayload);
     return user.save();
   }
 

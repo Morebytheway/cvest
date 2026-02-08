@@ -86,6 +86,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Auth"
         ]
@@ -100,7 +105,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SignupDto"
+                "$ref": "#/components/schemas/AdminCreateUserDto"
               }
             }
           }
@@ -110,6 +115,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Users"
         ]
@@ -122,71 +132,11 @@
             "description": ""
           }
         },
-        "tags": [
-          "Users"
-        ]
-      }
-    },
-    "/api/users/{id}": {
-      "patch": {
-        "operationId": "UsersController_update",
-        "parameters": [
+        "security": [
           {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
+            "bearer": []
           }
         ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Users"
-        ]
-      },
-      "delete": {
-        "operationId": "UsersController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Users"
-        ]
-      },
-      "get": {
-        "operationId": "UsersController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
         "tags": [
           "Users"
         ]
@@ -201,12 +151,17 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Users"
         ]
       }
     },
-    "/api/users/profile/{id}": {
+    "/api/users/{id}/profile": {
       "patch": {
         "operationId": "UsersController_updateProfile",
         "parameters": [
@@ -234,6 +189,91 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Users"
         ]
@@ -947,16 +987,6 @@
       "post": {
         "operationId": "WalletController_create",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateWalletDto"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": ""
@@ -968,6 +998,34 @@
       },
       "get": {
         "operationId": "WalletController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/my-wallet": {
+      "get": {
+        "operationId": "WalletController_getMyWallet",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/balance": {
+      "get": {
+        "operationId": "WalletController_getBalance",
         "parameters": [],
         "responses": {
           "200": {
@@ -1053,11 +1111,3328 @@
           "Wallet"
         ]
       }
+    },
+    "/api/wallet/credit": {
+      "post": {
+        "operationId": "WalletController_creditBalance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/debit": {
+      "post": {
+        "operationId": "WalletController_debitBalance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/freeze": {
+      "post": {
+        "operationId": "WalletController_freezeWallet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreezeWalletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/unfreeze": {
+      "post": {
+        "operationId": "WalletController_unfreezeWallet",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/fund-trade": {
+      "post": {
+        "operationId": "WalletController_fundTradeWallet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FundTradeWalletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trade wallet funded successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        },
+        "summary": "Fund trade wallet from main wallet",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/trade-balance": {
+      "get": {
+        "operationId": "WalletController_getTradeBalance",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Trade wallet balance retrieved successfully"
+          }
+        },
+        "summary": "Get trade wallet balance",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/balances": {
+      "get": {
+        "operationId": "WalletController_getBalances",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Balances retrieved successfully"
+          }
+        },
+        "summary": "Get both main and trade wallet balances",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/withdraw-trade": {
+      "post": {
+        "operationId": "WalletController_withdrawTradeWallet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawTradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trade wallet withdrawn successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        },
+        "summary": "Withdraw funds from trade wallet to main wallet",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/wallet/trade-transactions": {
+      "get": {
+        "operationId": "WalletController_getTradeWalletTransactions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "summary": "Get trade wallet transactions",
+        "tags": [
+          "Wallet"
+        ]
+      }
+    },
+    "/api/investments/plans": {
+      "get": {
+        "operationId": "InvestmentsController_getInvestmentPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Investment plans retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get available investment plans",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/invest": {
+      "post": {
+        "operationId": "InvestmentsController_invest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Investment created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Invest in a plan",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/my-investments": {
+      "get": {
+        "operationId": "InvestmentsController_getMyInvestments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User investments retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user investments",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/active": {
+      "get": {
+        "operationId": "InvestmentsController_getActiveInvestments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Active investments retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get active investments",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/history": {
+      "get": {
+        "operationId": "InvestmentsController_getInvestmentHistory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Investment history retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment history",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/summary": {
+      "get": {
+        "operationId": "InvestmentsController_getInvestmentSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Investment summary retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment summary",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/investments/{id}": {
+      "get": {
+        "operationId": "InvestmentsController_getInvestmentById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment retrieved successfully"
+          },
+          "404": {
+            "description": "Investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment by ID",
+        "tags": [
+          "Investments"
+        ]
+      }
+    },
+    "/api/transactions": {
+      "get": {
+        "operationId": "TransactionsController_getTransactions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user transactions",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/summary": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transaction summary retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transaction summary",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/{reference}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionByReference",
+        "parameters": [
+          {
+            "name": "reference",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction retrieved successfully"
+          },
+          "404": {
+            "description": "Transaction not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transaction by reference",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/type/{type}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transactions by type",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/status/{status}": {
+      "get": {
+        "operationId": "TransactionsController_getTransactionsByStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get transactions by status",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/admin/investments/performance": {
+      "get": {
+        "description": "As an Admin, I want to view performance stats to assess product success. Returns summary and per-plan metrics.",
+        "operationId": "AdminInvestmentsController_getPerformanceMetrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Performance metrics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View performance metrics",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/investments/plans": {
+      "post": {
+        "description": "As an Admin, I want to create new investment plans so users can invest. Use the example in the request body to proceed.",
+        "operationId": "AdminInvestmentsController_createInvestmentPlan",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvestmentPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Investment plan created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "Plan already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create new investment plan",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      },
+      "get": {
+        "description": "List plans with optional filters. Use query params for status, visibility, riskLevel, category, page, limit.",
+        "operationId": "AdminInvestmentsController_getAllInvestmentPlans",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status",
+            "schema": {
+              "enum": [
+                "active",
+                "inactive",
+                "archived"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "visibility",
+            "required": false,
+            "in": "query",
+            "description": "Filter by visibility",
+            "schema": {
+              "enum": [
+                "public",
+                "private",
+                "archived"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "riskLevel",
+            "required": false,
+            "in": "query",
+            "description": "Filter by risk level",
+            "schema": {
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category",
+            "schema": {
+              "example": "Fixed Income",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 0,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "example": "createdAt",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plans retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all investment plans",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/investments/plans/{id}": {
+      "get": {
+        "description": "View full plan details including ROI, duration, limits.",
+        "operationId": "AdminInvestmentsController_getInvestmentPlanById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan retrieved successfully"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get specific investment plan",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      },
+      "patch": {
+        "description": "As an Admin, I want to update ROI, duration, or limits so products stay accurate. Core terms (rate, duration, minAmount) cannot change while the plan has active investments.",
+        "operationId": "AdminInvestmentsController_updateInvestmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvestmentPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Investment plan updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edit investment terms",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminInvestmentsController_deleteInvestmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan deleted successfully"
+          },
+          "400": {
+            "description": "Cannot delete plan with user investments"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete investment plan",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/investments/plans/{id}/stats": {
+      "get": {
+        "description": "View performance stats for a single plan: total invested, active/completed counts, profit paid, ROI.",
+        "operationId": "AdminInvestmentsController_getInvestmentPlanStats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan statistics retrieved successfully"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment plan statistics",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminInvestmentsController_updatePlanStats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan statistics updated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update investment plan statistics",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/investments/plans/{id}/toggle": {
+      "patch": {
+        "description": "As an Admin, I want to deactivate an investment product if it is no longer available. Toggles between active and inactive.",
+        "operationId": "AdminInvestmentsController_toggleInvestmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan status toggled successfully"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activate / deactivate product",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/investments/plans/{id}/archive": {
+      "patch": {
+        "operationId": "AdminInvestmentsController_archiveInvestmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Investment plan ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plan archived successfully"
+          },
+          "400": {
+            "description": "Cannot archive plan with active investments"
+          },
+          "404": {
+            "description": "Investment plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Archive investment plan",
+        "tags": [
+          "Admin Investment Product Management"
+        ]
+      }
+    },
+    "/api/admin/user-investments": {
+      "get": {
+        "description": "List user investments with optional filters. Use query params: status, riskFlag, userId, investmentId, isFrozen, dateFrom, dateTo, minAmount, maxAmount, page, limit, sortBy, sortOrder. Example values are in the schema.",
+        "operationId": "AdminUserInvestmentsController_getAllUserInvestments",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "completed",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "riskFlag",
+            "required": false,
+            "in": "query",
+            "description": "Filter by risk flag",
+            "schema": {
+              "example": "MEDIUM",
+              "type": "string",
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH"
+              ]
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by user ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          },
+          {
+            "name": "investmentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by investment plan ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439012",
+              "type": "string"
+            }
+          },
+          {
+            "name": "isFrozen",
+            "required": false,
+            "in": "query",
+            "description": "Filter by frozen state",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "description": "Start date (ISO or YYYY-MM-DD)",
+            "schema": {
+              "example": "2025-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "description": "End date (ISO or YYYY-MM-DD)",
+            "schema": {
+              "example": "2025-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "name": "minAmount",
+            "required": false,
+            "in": "query",
+            "description": "Minimum investment amount (USDT)",
+            "schema": {
+              "minimum": 0,
+              "example": 500,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxAmount",
+            "required": false,
+            "in": "query",
+            "description": "Maximum investment amount (USDT)",
+            "schema": {
+              "minimum": 0,
+              "example": 50000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 0,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "example": "createdAt",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "example": "desc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User investments retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all user investments with filters",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/plans": {
+      "get": {
+        "description": "List investment plans with reduced parameters: status, page, limit. Use example values to proceed.",
+        "operationId": "AdminUserInvestmentsController_getAllInvestmentPlans",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by plan status",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment plans retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all investment plans (simplified)",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/user/{userId}": {
+      "get": {
+        "description": "Get all investments for a user by userId.",
+        "operationId": "AdminUserInvestmentsController_getUserInvestmentHistory",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User investment history retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user investment history",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}": {
+      "get": {
+        "operationId": "AdminUserInvestmentsController_getUserInvestmentById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439013",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User investment retrieved successfully"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get specific user investment by ID",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/complete": {
+      "patch": {
+        "operationId": "AdminUserInvestmentsController_completeInvestmentManually",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment completed successfully"
+          },
+          "400": {
+            "description": "Cannot complete investment"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Manually complete an investment",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/freeze": {
+      "patch": {
+        "operationId": "AdminUserInvestmentsController_freezeInvestment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FreezeInvestmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Investment frozen successfully"
+          },
+          "400": {
+            "description": "Cannot freeze investment"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Freeze a user investment",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/unfreeze": {
+      "patch": {
+        "operationId": "AdminUserInvestmentsController_unfreezeInvestment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment unfrozen successfully"
+          },
+          "400": {
+            "description": "Cannot unfreeze investment"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unfreeze a user investment",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/terminate": {
+      "patch": {
+        "operationId": "AdminUserInvestmentsController_terminateInvestment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment terminated successfully"
+          },
+          "400": {
+            "description": "Cannot terminate investment"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Emergency termination of investment",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/adjust-profit": {
+      "post": {
+        "operationId": "AdminUserInvestmentsController_adjustInvestmentProfit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfitAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profit adjusted successfully"
+          },
+          "400": {
+            "description": "Cannot adjust profit"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Adjust profit amount for completed investment",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/export": {
+      "post": {
+        "operationId": "AdminUserInvestmentsController_exportInvestmentData",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInvestmentQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Investment data exported successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export investment data with filters",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/user-investments/{id}/validate-action": {
+      "post": {
+        "operationId": "AdminUserInvestmentsController_validateInvestmentAction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User investment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action validation completed"
+          },
+          "404": {
+            "description": "User investment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Validate if an investment action can be performed",
+        "tags": [
+          "Admin User Investments"
+        ]
+      }
+    },
+    "/api/admin/analytics/overview": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getFinancialOverview",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Financial overview retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get financial overview",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/investments": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getInvestmentAnalytics",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment analytics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment analytics",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/profits": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getProfitAnalytics",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profit analytics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get profit analytics",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/revenue": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getRevenueAnalytics",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue analytics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get revenue analytics",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/user-behavior": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getUserBehaviorAnalytics",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User behavior analytics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user behavior analytics",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/plan-performance": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getPlanPerformance",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan performance analytics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment plan performance comparison",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/cash-flow": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getCashFlowProjections",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cash flow projections retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get cash flow projections",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/risk-exposure": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getRiskExposure",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Risk exposure metrics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get risk exposure metrics",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/daily-report/{date}": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getDailyReport",
+        "parameters": [
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily report retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get daily financial report",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/daily-reports": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getDailyReports",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily reports retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get daily reports for date range",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/weekly-summary": {
+      "get": {
+        "operationId": "AdminAnalyticsController_getWeeklySummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Weekly summary retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get weekly summary",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/reports/generate": {
+      "post": {
+        "operationId": "AdminAnalyticsController_generateReport",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportGenerationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Report generated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate custom report",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/reports/export-csv": {
+      "post": {
+        "operationId": "AdminAnalyticsController_exportCSV",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyticsQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data exported successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export data as CSV",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/analytics/daily-report/regenerate/{date}": {
+      "post": {
+        "operationId": "AdminAnalyticsController_regenerateReport",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily report regenerated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Regenerate daily report for specific date",
+        "tags": [
+          "Admin Analytics"
+        ]
+      }
+    },
+    "/api/admin/transactions": {
+      "get": {
+        "operationId": "AdminTransactionsController_getAllTransactions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all transactions with filters",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/transactions/{id}": {
+      "get": {
+        "operationId": "AdminTransactionsController_getTransactionById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get specific transaction by ID",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/transactions/failed": {
+      "get": {
+        "operationId": "AdminTransactionsController_getFailedTransactions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Failed transactions retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all failed transactions",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/transactions/{id}/reverse": {
+      "patch": {
+        "operationId": "AdminTransactionsController_reverseTransaction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionReversalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transaction reversed successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reverse a transaction",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/transactions/manual": {
+      "post": {
+        "operationId": "AdminTransactionsController_createManualTransaction",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualTransactionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Manual transaction created successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create manual transaction",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/transactions/{id}/retry": {
+      "patch": {
+        "operationId": "AdminTransactionsController_retryTransaction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction retry initiated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Retry failed transaction",
+        "tags": [
+          "Admin Transactions"
+        ]
+      }
+    },
+    "/api/admin/wallets": {
+      "get": {
+        "description": "List all wallets with optional filters. Use query params for userId, status, frozen, minBalance, maxBalance, page, limit.",
+        "operationId": "AdminWalletsController_getAllWallets",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by user ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by wallet status",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "frozen",
+                "closed"
+              ]
+            }
+          },
+          {
+            "name": "frozen",
+            "required": false,
+            "in": "query",
+            "description": "Filter frozen wallets",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "suspiciousActivity",
+            "required": false,
+            "in": "query",
+            "description": "Filter by suspicious activity flag",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minBalance",
+            "required": false,
+            "in": "query",
+            "description": "Minimum balance (USDT)",
+            "schema": {
+              "minimum": 0,
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxBalance",
+            "required": false,
+            "in": "query",
+            "description": "Maximum balance (USDT)",
+            "schema": {
+              "minimum": 0,
+              "example": 100000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "currency",
+            "required": false,
+            "in": "query",
+            "description": "Currency code",
+            "schema": {
+              "example": "USDT",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 0,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "example": "createdAt",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "example": "desc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallets retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all user wallets",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/user/{userId}": {
+      "get": {
+        "description": "Get a single user’s wallet by their user ID. Returns balance, trade balance, status, frozen state.",
+        "operationId": "AdminWalletsController_getUserWallets",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User wallet retrieved successfully"
+          },
+          "404": {
+            "description": "Wallet not found for this user"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View specific user wallet by userId",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/user/{userId}/balance": {
+      "patch": {
+        "description": "Credit or debit a user’s wallet by userId. Use example body to proceed.",
+        "operationId": "AdminWalletsController_adjustWalletBalance",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Balance adjusted successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Adjust user wallet balance",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/user/{userId}/freeze": {
+      "patch": {
+        "description": "Lock the user’s wallet so they cannot withdraw or transfer. Use example body to proceed.",
+        "operationId": "AdminWalletsController_freezeWallet",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletFreezeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet frozen successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Freeze user wallet by userId",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/user/{userId}/unfreeze": {
+      "patch": {
+        "operationId": "AdminWalletsController_unfreezeWallet",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet unfrozen successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unfreeze user wallet",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/by-wallet/{walletId}": {
+      "get": {
+        "description": "Fetch a single wallet by its MongoDB _id (walletId).",
+        "operationId": "AdminWalletsController_getWalletById",
+        "parameters": [
+          {
+            "name": "walletId",
+            "required": true,
+            "in": "path",
+            "description": "Wallet ID",
+            "schema": {
+              "example": "507f1f77bcf86cd799439012",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet retrieved successfully"
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get specific wallet by walletId",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/suspicious": {
+      "get": {
+        "operationId": "AdminWalletsController_getSuspiciousActivity",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Suspicious activity retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get suspicious activity reports",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/stats": {
+      "get": {
+        "operationId": "AdminWalletsController_getWalletStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Wallet statistics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get wallet statistics",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/wallets/manual-adjustment": {
+      "post": {
+        "description": "Adjust any user’s wallet by userId. Use the example body to proceed.",
+        "operationId": "AdminWalletsController_createManualAdjustment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Manual adjustment created successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create manual balance adjustment",
+        "tags": [
+          "Admin Wallets"
+        ]
+      }
+    },
+    "/api/admin/audit/logs": {
+      "get": {
+        "operationId": "AdminAuditController_getAuditTrail",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "severity",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "resource",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "action",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "adminId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit logs retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get audit trail logs",
+        "tags": [
+          "Admin Audit"
+        ]
+      }
+    },
+    "/api/admin/audit/stats": {
+      "get": {
+        "operationId": "AdminAuditController_getAuditStats",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "adminId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit statistics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get admin audit summary",
+        "tags": [
+          "Admin Audit"
+        ]
+      }
+    },
+    "/api/admin/audit/compliance-report": {
+      "get": {
+        "operationId": "AdminAuditController_getComplianceReport",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compliance report generated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate compliance report",
+        "tags": [
+          "Admin Audit"
+        ]
+      }
+    },
+    "/api/admin/audit/clear-logs": {
+      "post": {
+        "operationId": "AdminAuditController_clearAuditLogs",
+        "parameters": [
+          {
+            "name": "daysToKeep",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit logs cleared successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clear old audit logs",
+        "tags": [
+          "Admin Audit"
+        ]
+      }
+    },
+    "/api/admin/audit/{id}": {
+      "get": {
+        "operationId": "AdminAuditController_getAuditEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit entry retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get specific audit log entry",
+        "tags": [
+          "Admin Audit"
+        ]
+      }
+    },
+    "/api/admin/schedules/process-matured-investments": {
+      "post": {
+        "operationId": "AdminSchedulesController_processMaturedInvestments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Matured investments processed successfully"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process all matured investments manually",
+        "tags": [
+          "Admin Schedules"
+        ]
+      }
+    },
+    "/api/admin/schedules/stats": {
+      "get": {
+        "operationId": "AdminSchedulesController_getInvestmentStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get investment maturity statistics",
+        "tags": [
+          "Admin Schedules"
+        ]
+      }
+    },
+    "/api/admin/user-management": {
+      "get": {
+        "operationId": "AdminUserManagementController_getAllUsers",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search by name or email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "description": "Filter by role",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by active status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View all users with search and filter",
+        "tags": [
+          "Admin User (Investor) Management"
+        ]
+      }
+    },
+    "/api/admin/user-management/{userId}": {
+      "get": {
+        "operationId": "AdminUserManagementController_getUserProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View user profile",
+        "tags": [
+          "Admin User (Investor) Management"
+        ]
+      }
+    },
+    "/api/admin/user-management/{userId}/suspend": {
+      "patch": {
+        "operationId": "AdminUserManagementController_suspendOrReactivate",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuspendUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User suspension updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Suspend or deactivate account",
+        "tags": [
+          "Admin User (Investor) Management"
+        ]
+      }
+    },
+    "/api/admin/user-management/{userId}/reset-credentials": {
+      "post": {
+        "operationId": "AdminUserManagementController_resetCredentials",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetCredentialsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credentials reset"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reset user credentials",
+        "tags": [
+          "Admin User (Investor) Management"
+        ]
+      }
+    },
+    "/api/admin/deposits-withdrawals/deposits": {
+      "get": {
+        "operationId": "AdminDepositsWithdrawalsController_getDeposits",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter by type: deposit | withdrawal",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status: pending | completed | failed",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "User ID filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deposits retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View deposits",
+        "tags": [
+          "Admin Deposits & Withdrawals"
+        ]
+      }
+    },
+    "/api/admin/deposits-withdrawals/withdrawals": {
+      "get": {
+        "operationId": "AdminDepositsWithdrawalsController_getWithdrawals",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter by type: deposit | withdrawal",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status: pending | completed | failed",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "User ID filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Withdrawals retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View withdrawals",
+        "tags": [
+          "Admin Deposits & Withdrawals"
+        ]
+      }
+    },
+    "/api/admin/deposits-withdrawals/withdrawals/{transactionId}/approve-reject": {
+      "patch": {
+        "operationId": "AdminDepositsWithdrawalsController_approveOrRejectWithdrawal",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveRejectWithdrawalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Withdrawal action applied"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or reject withdrawal",
+        "tags": [
+          "Admin Deposits & Withdrawals"
+        ]
+      }
+    },
+    "/api/admin/deposits-withdrawals/manual-payout": {
+      "post": {
+        "operationId": "AdminDepositsWithdrawalsController_manualPayout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualPayoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Manual payout recorded"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Manual payout to user",
+        "tags": [
+          "Admin Deposits & Withdrawals"
+        ]
+      }
+    },
+    "/api/admin/deposits-withdrawals/reconciliation": {
+      "get": {
+        "operationId": "AdminDepositsWithdrawalsController_reconciliation",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "End date (ISO)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Transaction type",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reconciliation summary"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Transaction reconciliation",
+        "tags": [
+          "Admin Deposits & Withdrawals"
+        ]
+      }
+    },
+    "/api/admin/settings": {
+      "get": {
+        "operationId": "AdminSettingsController_getAllSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Settings retrieved"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all system settings",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      },
+      "post": {
+        "operationId": "AdminSettingsController_upsertSystemSetting",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemSettingsUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "System setting updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create or update any system setting",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      }
+    },
+    "/api/admin/settings/{key}": {
+      "get": {
+        "operationId": "AdminSettingsController_getByKey",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "description": "Setting key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting retrieved"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get setting by key",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      }
+    },
+    "/api/admin/settings/platform-fees": {
+      "put": {
+        "operationId": "AdminSettingsController_updatePlatformFees",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformFeesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Platform fees updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update platform fees",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      }
+    },
+    "/api/admin/settings/roi-rules": {
+      "put": {
+        "operationId": "AdminSettingsController_updateRoiRules",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoiRulesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ROI rules updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update ROI rules",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      }
+    },
+    "/api/admin/settings/investment-limits": {
+      "put": {
+        "operationId": "AdminSettingsController_updateInvestmentLimits",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestmentLimitsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Investment limits updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update investment limits",
+        "tags": [
+          "Admin Fees, ROI & Configuration Settings"
+        ]
+      }
+    },
+    "/api/swagger/json": {
+      "get": {
+        "operationId": "SwaggerController_getSwaggerJson",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Swagger"
+        ]
+      }
     }
   },
   "info": {
-    "title": "Soccerzone API",
-    "description": "API documentation for Soccerzone backend services",
+    "title": "CvestAPI",
+    "description": "API documentation for CvestAPI",
     "version": "1.0",
     "contact": {}
   },
@@ -1127,6 +4502,10 @@
           "password"
         ]
       },
+      "AdminCreateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
       "EditProfileDto": {
         "type": "object",
         "properties": {}
@@ -1139,13 +4518,569 @@
         "type": "object",
         "properties": {}
       },
-      "CreateWalletDto": {
-        "type": "object",
-        "properties": {}
-      },
       "UpdateWalletDto": {
         "type": "object",
         "properties": {}
+      },
+      "BalanceAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Adjustment amount in USDT. Positive = credit, negative = debit.",
+            "example": 100.5
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for the adjustment (audit trail)",
+            "example": "Correction for failed deposit TX-001"
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes (not shown to user)",
+            "example": "Approved by support after ticket #1234"
+          }
+        },
+        "required": [
+          "amount",
+          "reason"
+        ]
+      },
+      "FreezeWalletDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "FundTradeWalletDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "WithdrawTradeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "InvestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateInvestmentPlanDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plan name (e.g. Conservative 10%, Balanced 15%)",
+            "example": "Balanced 15%"
+          },
+          "rate": {
+            "type": "number",
+            "description": "ROI rate in percent (0-100)",
+            "example": 15,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "durationDays": {
+            "type": "number",
+            "description": "Investment duration in days",
+            "example": 30,
+            "minimum": 1
+          },
+          "minAmount": {
+            "type": "number",
+            "description": "Minimum investment amount (USDT)",
+            "example": 500,
+            "minimum": 1
+          },
+          "maxAmount": {
+            "type": "number",
+            "description": "Maximum investment amount (USDT). Omit for no cap.",
+            "example": 50000,
+            "minimum": 0
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility of the plan",
+            "enum": [
+              "public",
+              "private"
+            ],
+            "example": "public"
+          },
+          "maxActiveUsers": {
+            "type": "number",
+            "description": "Max number of users who can invest (0 = unlimited)",
+            "example": 0,
+            "minimum": 0
+          },
+          "allowMultipleInvestments": {
+            "type": "boolean",
+            "description": "Allow user to have multiple positions in this plan",
+            "example": true
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "Risk level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "example": "MEDIUM"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category label (e.g. Fixed Income, Growth)",
+            "example": "Fixed Income"
+          },
+          "description": {
+            "type": "string",
+            "description": "Public description shown to investors",
+            "example": "30-day fixed return plan with 15% annualized ROI. Ideal for balanced risk appetite."
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes (not shown to users)",
+            "example": "Q1 2025 launch. Review limits in June."
+          }
+        },
+        "required": [
+          "name",
+          "rate",
+          "durationDays",
+          "minAmount"
+        ]
+      },
+      "UpdateInvestmentPlanDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plan name",
+            "example": "Balanced 15% (Revised)"
+          },
+          "rate": {
+            "type": "number",
+            "description": "ROI rate in percent. Cannot change if plan has active investments.",
+            "example": 18,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "durationDays": {
+            "type": "number",
+            "description": "Duration in days. Cannot change if plan has active investments.",
+            "example": 60,
+            "minimum": 1
+          },
+          "minAmount": {
+            "type": "number",
+            "description": "Minimum investment (USDT). Cannot change if plan has active investments.",
+            "example": 1000,
+            "minimum": 1
+          },
+          "maxAmount": {
+            "type": "number",
+            "description": "Maximum investment (USDT)",
+            "example": 100000,
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "description": "Status: active, inactive, or archived",
+            "enum": [
+              "active",
+              "inactive",
+              "archived"
+            ],
+            "example": "active"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility",
+            "enum": [
+              "public",
+              "private",
+              "archived"
+            ],
+            "example": "public"
+          },
+          "maxActiveUsers": {
+            "type": "number",
+            "description": "Max active users (0 = unlimited)",
+            "example": 0,
+            "minimum": 0
+          },
+          "allowMultipleInvestments": {
+            "type": "boolean",
+            "description": "Allow multiple investments per user",
+            "example": true
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "Risk level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "example": "MEDIUM"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category",
+            "example": "Fixed Income"
+          },
+          "description": {
+            "type": "string",
+            "description": "Public description",
+            "example": "Updated terms: 60-day plan with 18% ROI."
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Admin notes",
+            "example": "Terms updated in Feb 2025."
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "Admin user ID (set by backend)"
+          }
+        }
+      },
+      "FreezeInvestmentDto": {
+        "type": "object",
+        "properties": {
+          "freezeReason": {
+            "type": "string",
+            "description": "Reason for freezing the investment",
+            "example": "Compliance review required"
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes",
+            "example": "Pending KYC verification"
+          }
+        },
+        "required": [
+          "freezeReason"
+        ]
+      },
+      "ProfitAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "newProfitAmount": {
+            "type": "number",
+            "description": "New profit amount (USDT) to set",
+            "example": 125.5
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for the adjustment",
+            "example": "Corrected calculation error"
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes",
+            "example": "Approved by finance team"
+          }
+        },
+        "required": [
+          "newProfitAmount"
+        ]
+      },
+      "UserInvestmentQueryDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Filter by status",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "example": "active"
+          },
+          "riskFlag": {
+            "type": "string",
+            "description": "Filter by risk flag",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "example": "MEDIUM"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Filter by user ID",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "investmentId": {
+            "type": "string",
+            "description": "Filter by investment plan ID",
+            "example": "507f1f77bcf86cd799439012"
+          },
+          "isFrozen": {
+            "type": "boolean",
+            "description": "Filter by frozen state",
+            "example": false
+          },
+          "dateFrom": {
+            "type": "string",
+            "description": "Start date (ISO or YYYY-MM-DD)",
+            "example": "2025-01-01"
+          },
+          "dateTo": {
+            "type": "string",
+            "description": "End date (ISO or YYYY-MM-DD)",
+            "example": "2025-12-31"
+          },
+          "minAmount": {
+            "type": "number",
+            "description": "Minimum investment amount (USDT)",
+            "example": 500,
+            "minimum": 0
+          },
+          "maxAmount": {
+            "type": "number",
+            "description": "Maximum investment amount (USDT)",
+            "example": 50000,
+            "minimum": 0
+          },
+          "page": {
+            "type": "number",
+            "description": "Page number",
+            "example": 1,
+            "minimum": 0
+          },
+          "limit": {
+            "type": "number",
+            "description": "Items per page",
+            "example": 10,
+            "minimum": 1
+          },
+          "sortBy": {
+            "type": "string",
+            "description": "Sort field",
+            "example": "createdAt"
+          },
+          "sortOrder": {
+            "type": "string",
+            "description": "Sort order",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "example": "desc"
+          }
+        }
+      },
+      "ReportGenerationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AnalyticsQueryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TransactionReversalDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ManualTransactionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "WalletFreezeDto": {
+        "type": "object",
+        "properties": {
+          "freezeReason": {
+            "type": "string",
+            "description": "Reason for freezing the wallet",
+            "example": "Suspicious activity under review"
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes",
+            "example": "Compliance hold - KYC pending"
+          }
+        },
+        "required": [
+          "freezeReason"
+        ]
+      },
+      "ManualAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID whose wallet to adjust",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Adjustment amount in USDT. Positive = credit, negative = debit.",
+            "example": -50.25
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for the transaction (audit trail)",
+            "example": "Refund for cancelled investment INV-002"
+          },
+          "adminNotes": {
+            "type": "string",
+            "description": "Internal admin notes",
+            "example": "Processed per support ticket #5678"
+          }
+        },
+        "required": [
+          "userId",
+          "amount",
+          "description"
+        ]
+      },
+      "SuspendUserDto": {
+        "type": "object",
+        "properties": {
+          "suspended": {
+            "type": "boolean",
+            "description": "Whether to suspend (true) or reactivate (false)"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for suspension"
+          }
+        },
+        "required": [
+          "suspended"
+        ]
+      },
+      "ResetCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "description": "New password (if not provided, a reset link may be sent)"
+          },
+          "sendResetEmail": {
+            "type": "boolean",
+            "description": "Send password reset email instead"
+          }
+        }
+      },
+      "ApproveRejectWithdrawalDto": {
+        "type": "object",
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "description": "true = approve, false = reject"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason (e.g. for rejection)"
+          }
+        },
+        "required": [
+          "approve"
+        ]
+      },
+      "ManualPayoutDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID to credit"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount (USDT)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description or reference"
+          }
+        },
+        "required": [
+          "userId",
+          "amount"
+        ]
+      },
+      "PlatformFeesDto": {
+        "type": "object",
+        "properties": {
+          "depositFeePercent": {
+            "type": "number",
+            "description": "Deposit fee percentage"
+          },
+          "withdrawalFeePercent": {
+            "type": "number",
+            "description": "Withdrawal fee percentage"
+          },
+          "withdrawalFeeFixed": {
+            "type": "number",
+            "description": "Fixed withdrawal fee (USDT)"
+          },
+          "investmentFeePercent": {
+            "type": "number",
+            "description": "Investment fee percentage"
+          }
+        }
+      },
+      "RoiRulesDto": {
+        "type": "object",
+        "properties": {
+          "defaultRoiPercent": {
+            "type": "number",
+            "description": "Default ROI percentage"
+          },
+          "minRoiPercent": {
+            "type": "number",
+            "description": "Minimum ROI percentage allowed"
+          },
+          "maxRoiPercent": {
+            "type": "number",
+            "description": "Maximum ROI percentage allowed"
+          },
+          "calculationType": {
+            "type": "string",
+            "description": "ROI calculation type: simple | compound"
+          }
+        }
+      },
+      "InvestmentLimitsDto": {
+        "type": "object",
+        "properties": {
+          "minInvestmentAmount": {
+            "type": "number",
+            "description": "Global minimum investment amount (USDT)"
+          },
+          "maxInvestmentAmount": {
+            "type": "number",
+            "description": "Global maximum investment amount (USDT)"
+          },
+          "maxActiveInvestmentsPerUser": {
+            "type": "number",
+            "description": "Max active investments per user"
+          }
+        }
+      },
+      "SystemSettingsUpdateDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Setting key (e.g. platform_fees, roi_rules, investment_limits)"
+          },
+          "value": {
+            "type": "object",
+            "description": "Setting value (object)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
       }
     }
   }

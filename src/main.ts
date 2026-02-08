@@ -11,53 +11,65 @@ async function bootstrap() {
   // === Global API prefix ===
   app.setGlobalPrefix('api');
 
+  // === Enable CORS ===
+  app.enableCors({
+    origin: true, // allow all origins
+    methods: '*', // allow all HTTP methods
+    allowedHeaders: '*', // allow all headers
+    credentials: true, // allow cookies/auth headers
+  });
+
   // === Validation pipes ===
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // === Handle raw body for Paystack webhooks ===
   app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
-  // === Enable CORS ===
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'https://soccerzone-frontend.vercel.app',
-        process.env.FRONTEND_URL,
-        'http://localhost:4000',
-        'http://localhost:5173',
-      ];
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.warn(`❌ Blocked by CORS: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  // === Serve static files (for swagger.json) ===
+  app.use(express.static('.'));
 
   // === Swagger Documentation ===
   const config = new DocumentBuilder()
-    .setTitle('Soccerzone API')
-    .setDescription('API documentation for Soccerzone backend services')
+    .setTitle(process.env.APP_NAME || 'Investment Platform Admin API')
+    .setDescription(
+      `API documentation for ${process.env.APP_NAME || 'Investment Platform admin services'}`,
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // auto-generate swagger JSON file into /swagger.json
+  // Always generate swagger.json file for frontend access
   const fs = require('fs');
   fs.writeFileSync('./swagger.json', JSON.stringify(document, null, 2));
+  console.log('📘 Swagger JSON generated at /swagger.json');
 
   // serve swagger at /api/docs
   SwaggerModule.setup('/api/docs', app, document);
 
+  // Add swagger.json endpoint using the document object
+  app.use('/api/swagger.json', (req, res, next) => {
+    if (req.method === 'GET') {
+      try {
+        res.setHeader('Content-Type', 'application/json');
+        res.json(document);
+      } catch (error) {
+        res.status(500).json({
+          message: 'Error generating swagger documentation',
+          suggestion: 'Access full Swagger docs at /api/docs',
+          error: error.message,
+        });
+      }
+    } else {
+      next();
+    }
+  });
+
   console.log('📘 Swagger running at http://localhost:${port}/api/docs');
-  console.log('📘 Swagger JSON generated at /swagger.json');
+  console.log(
+    '📘 Swagger JSON available at http://localhost:${port}/api/swagger.json',
+  );
 
   // === Seeder ===
   try {

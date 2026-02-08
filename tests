@@ -1,0 +1,6 @@
+node -e "
+const mongoose = require('mongoose');
+mongoose.connect('mongodb+srv://admin:Password.123@cvest.mby7ewj.mongodb.net/?authSource=admin&appName=cvest')
+  .then(() => console.log('✅ AUTH OK'))
+  .catch(e => console.error('❌ AUTH FAIL:', e.message));
+"

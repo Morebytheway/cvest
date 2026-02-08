@@ -1,6 +1,12 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateSlotDto } from './create-slot.dto';
-import { IsString, IsOptional, IsNumber, IsEnum, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsBoolean,
+} from 'class-validator';
 
 export class UpdateSlotDto extends PartialType(CreateSlotDto) {
   // Required to identify which slot to update

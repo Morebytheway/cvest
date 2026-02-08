@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AdminAuditService } from './admin-audit.service';
+import { AdminAudit, AdminAuditSchema } from './schemas/admin-audit.schema';
+import { User, UserSchema } from '../../users/schemas/user.schema';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: AdminAudit.name, schema: AdminAuditSchema },
+      { name: User.name, schema: UserSchema },
+    ]),
+  ],
+  providers: [AdminAuditService],
+  exports: [AdminAuditService],
+})
+export class AdminAuditModule {}
