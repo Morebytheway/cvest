@@ -35,6 +35,13 @@ export class User {
   @Prop({ type: Types.ObjectId, ref: 'Wallet' })
   wallet?: Types.ObjectId;
 
+  // Admin: suspend / deactivate
+  @Prop({ default: false })
+  suspended?: boolean;
+
+  @Prop()
+  suspensionReason?: string;
+
   async comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }

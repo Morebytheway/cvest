@@ -37,7 +37,7 @@ interface AuthenticatedRequest {
   };
 }
 
-@ApiTags('Admin Investment Plans')
+@ApiTags('Admin Investment Product Management')
 @Controller('admin/investments')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN, Role.SUPER_ADMIN)
@@ -47,9 +47,33 @@ export class AdminInvestmentsController {
     private readonly adminInvestmentsService: AdminInvestmentsService,
   ) {}
 
+  @Get('performance')
+  @ApiOperation({
+    summary: 'View performance metrics',
+    description:
+      'As an Admin, I want to view performance stats to assess product success. Returns summary and per-plan metrics.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Performance metrics retrieved successfully',
+  })
+  async getPerformanceMetrics() {
+    const result =
+      await this.adminInvestmentsService.getAllPlansPerformanceMetrics();
+    return {
+      success: true,
+      message: 'Performance metrics retrieved successfully',
+      ...result,
+    };
+  }
+
   @Post('plans')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create new investment plan' })
+  @ApiOperation({
+    summary: 'Create new investment plan',
+    description:
+      'As an Admin, I want to create new investment plans so users can invest. Use the example in the request body to proceed.',
+  })
   @ApiResponse({
     status: 201,
     description: 'Investment plan created successfully',
@@ -74,7 +98,10 @@ export class AdminInvestmentsController {
   }
 
   @Get('plans')
-  @ApiOperation({ summary: 'Get all investment plans' })
+  @ApiOperation({
+    summary: 'Get all investment plans',
+    description: 'List plans with optional filters. Use query params for status, visibility, riskLevel, category, page, limit.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Investment plans retrieved successfully',
@@ -111,7 +138,10 @@ export class AdminInvestmentsController {
   }
 
   @Get('plans/:id')
-  @ApiOperation({ summary: 'Get specific investment plan' })
+  @ApiOperation({
+    summary: 'Get specific investment plan',
+    description: 'View full plan details including ROI, duration, limits.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Investment plan retrieved successfully',
@@ -130,7 +160,10 @@ export class AdminInvestmentsController {
   }
 
   @Get('plans/:id/stats')
-  @ApiOperation({ summary: 'Get investment plan statistics' })
+  @ApiOperation({
+    summary: 'Get investment plan statistics',
+    description: 'View performance stats for a single plan: total invested, active/completed counts, profit paid, ROI.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Investment plan statistics retrieved successfully',
@@ -149,7 +182,11 @@ export class AdminInvestmentsController {
   }
 
   @Patch('plans/:id')
-  @ApiOperation({ summary: 'Update investment plan' })
+  @ApiOperation({
+    summary: 'Edit investment terms',
+    description:
+      'As an Admin, I want to update ROI, duration, or limits so products stay accurate. Core terms (rate, duration, minAmount) cannot change while the plan has active investments.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Investment plan updated successfully',
@@ -176,7 +213,11 @@ export class AdminInvestmentsController {
   }
 
   @Patch('plans/:id/toggle')
-  @ApiOperation({ summary: 'Toggle investment plan status (active/inactive)' })
+  @ApiOperation({
+    summary: 'Activate / deactivate product',
+    description:
+      'As an Admin, I want to deactivate an investment product if it is no longer available. Toggles between active and inactive.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Investment plan status toggled successfully',

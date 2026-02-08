@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Header,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -48,7 +40,7 @@ export class AuthController {
   // -------------------------
   // Protected Endpoints
   // -------------------------
-
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Req() req) {

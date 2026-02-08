@@ -18,6 +18,7 @@ export class Transaction {
       'investment_principal',
       'deposit',
       'withdrawal',
+      'admin_adjustment',
     ],
   })
   type: string;

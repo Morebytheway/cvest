@@ -20,6 +20,7 @@ import {
   TransactionDocument,
 } from '../../transactions/schemas/transaction.schema';
 import { UserInvestmentQueryDto } from './dto/user-investment-query.dto';
+import { InvestmentPlanQueryDto } from './dto/investment-plan-query.dto';
 import { ProfitAdjustmentDto } from './dto/profit-adjustment.dto';
 import { FreezeInvestmentDto } from './dto/freeze-investment.dto';
 import { InvestmentsService } from '../../investments/investments.service';
@@ -36,6 +37,38 @@ export class AdminUserInvestmentsService {
     private transactionModel: Model<TransactionDocument>,
     private readonly investmentsService: InvestmentsService,
   ) {}
+
+  async getAllInvestmentPlans(query: InvestmentPlanQueryDto): Promise<{
+    plans: Array<Record<string, unknown>>;
+    total: number;
+    pagination: { page: number; limit: number; totalPages: number };
+  }> {
+    const { page = 1, limit = 10, status } = query;
+    const filter: Record<string, unknown> = {};
+    if (status) filter.status = status;
+    const skip = (page - 1) * limit;
+
+    const [plans, total] = await Promise.all([
+      this.investmentModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select('name rate durationDays minAmount maxAmount status visibility riskLevel')
+        .lean(),
+      this.investmentModel.countDocuments(filter),
+    ]);
+
+    return {
+      plans,
+      total,
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 
   async getAllUserInvestments(query: UserInvestmentQueryDto): Promise<{
     investments: UserInvestmentDocument[];

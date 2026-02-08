@@ -25,6 +25,7 @@ import { AdminWalletsService } from './admin-wallets.service';
 import { WalletQueryDto } from './dto/wallet-query.dto';
 import { BalanceAdjustmentDto } from './dto/balance-adjustment.dto';
 import { WalletFreezeDto } from './dto/wallet-freeze.dto';
+import { ManualAdjustmentDto } from './dto/manual-adjustment.dto';
 
 interface AuthenticatedRequest {
   user: { userId: string; email: string; role: string };
@@ -39,7 +40,10 @@ export class AdminWalletsController {
   constructor(private readonly adminWalletsService: AdminWalletsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all user wallets with filters' })
+  @ApiOperation({
+    summary: 'Get all user wallets',
+    description: 'List all wallets with optional filters. Use query params for userId, status, frozen, minBalance, maxBalance, page, limit.',
+  })
   @ApiResponse({ status: 200, description: 'Wallets retrieved successfully' })
   async getAllWallets(@Query() query: WalletQueryDto) {
     const result = await this.adminWalletsService.getAllWallets(query);
@@ -51,25 +55,32 @@ export class AdminWalletsController {
   }
 
   @Get('user/:userId')
-  @ApiOperation({ summary: 'Get specific user wallets' })
+  @ApiOperation({
+    summary: 'View specific user wallet by userId',
+    description: 'Get a single user’s wallet by their user ID. Returns balance, trade balance, status, frozen state.',
+  })
   @ApiResponse({
     status: 200,
-    description: 'User wallets retrieved successfully',
+    description: 'User wallet retrieved successfully',
   })
-  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiResponse({ status: 404, description: 'Wallet not found for this user' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   async getUserWallets(@Param('userId') userId: string) {
     const wallets = await this.adminWalletsService.getUserWallets(userId);
     return {
       success: true,
-      message: 'User wallets retrieved successfully',
+      message: 'User wallet retrieved successfully',
       data: wallets,
     };
   }
 
   @Patch('user/:userId/balance')
-  @ApiOperation({ summary: 'Adjust user wallet balance' })
+  @ApiOperation({
+    summary: 'Adjust user wallet balance',
+    description: 'Credit or debit a user’s wallet by userId. Use example body to proceed.',
+  })
   @ApiResponse({ status: 200, description: 'Balance adjusted successfully' })
-  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   async adjustWalletBalance(
     @Param('userId') userId: string,
     @Body() adjustmentDto: BalanceAdjustmentDto,
@@ -88,9 +99,12 @@ export class AdminWalletsController {
   }
 
   @Patch('user/:userId/freeze')
-  @ApiOperation({ summary: 'Freeze user wallet' })
+  @ApiOperation({
+    summary: 'Freeze user wallet by userId',
+    description: 'Lock the user’s wallet so they cannot withdraw or transfer. Use example body to proceed.',
+  })
   @ApiResponse({ status: 200, description: 'Wallet frozen successfully' })
-  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   async freezeWallet(
     @Param('userId') userId: string,
     @Body() freezeDto: WalletFreezeDto,
@@ -111,7 +125,7 @@ export class AdminWalletsController {
   @Patch('user/:userId/unfreeze')
   @ApiOperation({ summary: 'Unfreeze user wallet' })
   @ApiResponse({ status: 200, description: 'Wallet unfrozen successfully' })
-  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'userId', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   async unfreezeWallet(
     @Param('userId') userId: string,
     @Request() req: AuthenticatedRequest,
@@ -124,6 +138,23 @@ export class AdminWalletsController {
       success: true,
       message: 'Wallet unfrozen successfully',
       data: result,
+    };
+  }
+
+  @Get('by-wallet/:walletId')
+  @ApiOperation({
+    summary: 'Get specific wallet by walletId',
+    description: 'Fetch a single wallet by its MongoDB _id (walletId).',
+  })
+  @ApiResponse({ status: 200, description: 'Wallet retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Wallet not found' })
+  @ApiParam({ name: 'walletId', description: 'Wallet ID', example: '507f1f77bcf86cd799439012' })
+  async getWalletById(@Param('walletId') walletId: string) {
+    const data = await this.adminWalletsService.getWalletById(walletId);
+    return {
+      success: true,
+      message: 'Wallet retrieved successfully',
+      data,
     };
   }
 
@@ -158,13 +189,16 @@ export class AdminWalletsController {
   }
 
   @Post('manual-adjustment')
-  @ApiOperation({ summary: 'Create manual balance adjustment' })
+  @ApiOperation({
+    summary: 'Create manual balance adjustment',
+    description: 'Adjust any user’s wallet by userId. Use the example body to proceed.',
+  })
   @ApiResponse({
     status: 201,
     description: 'Manual adjustment created successfully',
   })
   async createManualAdjustment(
-    @Body() adjustmentDto: any,
+    @Body() adjustmentDto: ManualAdjustmentDto,
     @Request() req: AuthenticatedRequest,
   ) {
     const result = await this.adminWalletsService.createManualAdjustment(

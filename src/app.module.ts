@@ -22,6 +22,9 @@ import { AdminTransactionsModule } from './admin/transactions/admin-transactions
 import { AdminWalletsModule } from './admin/wallets/admin-wallets.module';
 import { AdminAuditModule } from './admin/audit/admin-audit.module';
 import { AdminSchedulesModule } from './admin/schedules/admin-schedules.module';
+import { AdminUserManagementModule } from './admin/user-management/admin-user-management.module';
+import { AdminDepositsWithdrawalsModule } from './admin/deposits-withdrawals/admin-deposits-withdrawals.module';
+import { AdminSettingsModule } from './admin/settings/admin-settings.module';
 
 @Module({
   imports: [
@@ -50,6 +53,9 @@ import { AdminSchedulesModule } from './admin/schedules/admin-schedules.module';
     AdminWalletsModule,
     AdminAuditModule,
     AdminSchedulesModule,
+    AdminUserManagementModule,
+    AdminDepositsWithdrawalsModule,
+    AdminSettingsModule,
     ApiDocModule,
   ],
   providers: [],

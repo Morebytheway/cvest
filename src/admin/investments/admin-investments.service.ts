@@ -375,6 +375,110 @@ export class AdminInvestmentsService {
     }
   }
 
+  async getAllPlansPerformanceMetrics(): Promise<{
+    summary: {
+      totalPlans: number;
+      activePlans: number;
+      totalInvested: number;
+      totalProfitPaid: number;
+      activeInvestmentsCount: number;
+      completedInvestmentsCount: number;
+      uniqueInvestors: number;
+      overallRoiPercent: number;
+    };
+    byPlan: Array<{
+      planId: string;
+      planName: string;
+      rate: number;
+      status: string;
+      totalInvested: number;
+      totalProfitPaid: number;
+      activeCount: number;
+      completedCount: number;
+      userCount: number;
+      roiPercent: number;
+    }>;
+  }> {
+    const [plans, byPlanAgg] = await Promise.all([
+      this.investmentModel.find().lean(),
+      this.userInvestmentModel.aggregate([
+        {
+          $group: {
+            _id: '$investment',
+            totalInvested: { $sum: '$amount' },
+            totalProfitPaid: {
+              $sum: {
+                $cond: [
+                  { $eq: ['$isProfitCredited', true] },
+                  '$actualProfit',
+                  0,
+                ],
+              },
+            },
+            activeCount: {
+              $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] },
+            },
+            completedCount: {
+              $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
+            },
+            userCount: { $addToSet: '$user' },
+          },
+        },
+        {
+          $addFields: {
+            userCount: { $size: '$userCount' },
+            roiPercent: {
+              $cond: [
+                { $gt: ['$totalInvested', 0] },
+                {
+                  $multiply: [
+                    { $divide: ['$totalProfitPaid', '$totalInvested'] },
+                    100,
+                  ],
+                },
+                0,
+              ],
+            },
+          },
+        },
+      ]),
+    ]);
+
+    const planMap = new Map(plans.map((p: any) => [p._id.toString(), p]));
+    const byPlan = byPlanAgg.map((row: any) => {
+      const plan = planMap.get(row._id?.toString());
+      return {
+        planId: row._id?.toString(),
+        planName: plan?.name ?? 'Unknown',
+        rate: plan?.rate ?? 0,
+        status: plan?.status ?? 'unknown',
+        totalInvested: row.totalInvested ?? 0,
+        totalProfitPaid: row.totalProfitPaid ?? 0,
+        activeCount: row.activeCount ?? 0,
+        completedCount: row.completedCount ?? 0,
+        userCount: row.userCount ?? 0,
+        roiPercent: Math.round((row.roiPercent ?? 0) * 100) / 100,
+      };
+    });
+
+    const summary = {
+      totalPlans: plans.length,
+      activePlans: plans.filter((p: any) => p.status === 'active').length,
+      totalInvested: byPlan.reduce((s, p) => s + p.totalInvested, 0),
+      totalProfitPaid: byPlan.reduce((s, p) => s + p.totalProfitPaid, 0),
+      activeInvestmentsCount: byPlan.reduce((s, p) => s + p.activeCount, 0),
+      completedInvestmentsCount: byPlan.reduce((s, p) => s + p.completedCount, 0),
+      uniqueInvestors: new Set(byPlanAgg.flatMap((r: any) => r.userCount || [])).size,
+      overallRoiPercent: 0,
+    };
+    summary.overallRoiPercent =
+      summary.totalInvested > 0
+        ? Math.round((summary.totalProfitPaid / summary.totalInvested) * 10000) / 100
+        : 0;
+
+    return { summary, byPlan };
+  }
+
   async updatePlanStats(id: string): Promise<void> {
     const stats = await this.userInvestmentModel.aggregate([
       { $match: { investment: new Types.ObjectId(id) } },

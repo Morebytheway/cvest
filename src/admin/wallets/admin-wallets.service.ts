@@ -58,6 +58,29 @@ export class AdminWalletsService {
   async getUserWallets(userId: string) {
     const wallet = await this.walletModel
       .findOne({ user: new Types.ObjectId(userId) })
+      .populate('user', 'name email')
+      .populate('frozenBy', 'name email')
+      .exec();
+
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found for this user');
+    }
+
+    return {
+      wallet,
+      balance: wallet.balance,
+      tradeWalletBalance: wallet.tradeWalletBalance,
+      currency: wallet.currency,
+      status: wallet.status,
+      frozen: wallet.frozen,
+      hasActiveInvestments: wallet.hasActiveInvestments,
+    };
+  }
+
+  async getWalletById(walletId: string) {
+    const wallet = await this.walletModel
+      .findById(walletId)
+      .populate('user', 'name email')
       .populate('frozenBy', 'name email')
       .exec();
 
@@ -67,9 +90,11 @@ export class AdminWalletsService {
 
     return {
       wallet,
+      balance: wallet.balance,
       tradeWalletBalance: wallet.tradeWalletBalance,
       currency: wallet.currency,
       status: wallet.status,
+      frozen: wallet.frozen,
       hasActiveInvestments: wallet.hasActiveInvestments,
     };
   }
@@ -110,7 +135,7 @@ export class AdminWalletsService {
         user: new Types.ObjectId(userId),
         type: 'admin_adjustment',
         amount: adjustmentDto.amount,
-        source: 'admin',
+        source: 'wallet',
         destination: 'wallet',
         reference: `ADJUST_${Date.now()}`,
         status: 'completed',
@@ -201,7 +226,10 @@ export class AdminWalletsService {
     };
   }
 
-  async createManualAdjustment(adjustmentDto: any, adminId: string) {
+  async createManualAdjustment(
+    adjustmentDto: { userId: string; amount: number; description: string; adminNotes?: string },
+    adminId: string,
+  ) {
     const session = await this.walletModel.db.startSession();
     session.startTransaction();
 
@@ -233,7 +261,7 @@ export class AdminWalletsService {
         user: new Types.ObjectId(adjustmentDto.userId),
         type: 'admin_adjustment',
         amount: adjustmentDto.amount,
-        source: 'admin',
+        source: 'wallet',
         destination: 'wallet',
         reference: `MANUAL_${Date.now()}`,
         status: 'completed',
